@@ -1,4 +1,16 @@
 {
+	"name": "fuelphp/dependency",
+	"type": "library",
+	"description": "Dependency handling.",
+	"keywords": ["dependency", "injection", "dpenedencies"],
+	"homepage": "https://github.com/fuelphp/dependency",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "FuelPHP Development Team",
+			"email": "team@fuelphp.com"
+		}
+	],
 	"autoload": {
 		"psr-0": {
 			"FuelPHP\\Dependency": "src"

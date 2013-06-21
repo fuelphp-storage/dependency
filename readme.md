@@ -84,7 +84,7 @@ Provider can provide the container with resources but also act on a namespace.
 A namespace is a string prefix which maps identifiers to the providers factory method.
 
 ```
-&lt;?php
+<?php
 use FuelPHP\Dependency\ServiceProvider;
 
 class MyProvider extends ServiceProvider

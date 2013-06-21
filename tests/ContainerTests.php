@@ -142,4 +142,25 @@ class ContainerTests extends PHPUnit_Framework_TestCase
 		$result = $container['ConstructorDefault'];
 		$this->assertNull($result->dep);
 	}
+
+	public function testExtensions()
+	{
+		$container = new Container;
+		$container->register('id', 'stdClass');
+
+		$container->extend('id', function($container, $instance) {
+			$instance->name = 'Frank';
+		});
+
+		$container->extend('id', function($container, $instance) {
+			$instance->surname = 'de Jonge';
+
+			return $instance;
+		});
+
+		$instance = $container['id'];
+
+		$this->assertEquals('Frank', $instance->name);
+		$this->assertEquals('de Jonge', $instance->surname);
+	}
 }

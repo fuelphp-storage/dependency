@@ -4,24 +4,20 @@ namespace FuelPHP\Dependency;
 
 abstract class ServiceProvider implements ResourceAwareInterface
 {
+	/**
+	 * @var  string  $namespace  provider namespace
+	 */
 	public $namespace;
 
-	protected $regex;
-
+	/**
+	 * @var  Container  $container
+	 */
 	protected $container;
 
-	public $provides = array();
-
 	/**
-	 * Fires the provide function as erases the provide identifiers.
-	 *
-	 * @return void
+	 * @var  array  @provides  list of identifiers
 	 */
-	public function doProvide()
-	{
-		$this->provide();
-		$this->provides = false;
-	}
+	public $provides;
 
 	/**
 	 * Container injection

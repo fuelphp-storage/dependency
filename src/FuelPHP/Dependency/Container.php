@@ -3,14 +3,29 @@
 namespace FuelPHP\Dependency;
 
 use ArrayAccess;
+use Closure;
 
 class Container implements ArrayAccess, ResourceAwareInterface
 {
+	/**
+	 * @var  array  $resources  resources
+	 */
 	protected $resources = array();
 
+	/**
+	 * @var  array  $instances  resolved instances
+	 */
 	protected $instances = array();
 
+	/**
+	 * @var  array  $services  service providers
+	 */
 	protected $services = array();
+
+	/**
+	 * @var  array  $extensions  resource extensions
+	 */
+	protected $extensions = array();
 
 	/**
 	 * Register a resource
@@ -46,13 +61,20 @@ class Container implements ArrayAccess, ResourceAwareInterface
 		return $resource;
 	}
 
+	/**
+	 * Register a service provider
+	 *
+	 * @param   ServiceProvider  $service
+	 * @return  $this
+	 */
 	public function registerService(ServiceProvider $service)
 	{
 		$service->setContainer($this);
 
 		if ($service->provides === true)
 		{
-			$service->doProvide();
+			$service->provide();
+			$service->provides = false;
 		}
 
 		$this->services[get_class($service)] = $service;
@@ -60,6 +82,12 @@ class Container implements ArrayAccess, ResourceAwareInterface
 		return $this;
 	}
 
+	/**
+	 * Register service providers
+	 *
+	 * @param   ServiceProvider[] $service
+	 * @return  $this
+	 */
 	public function registerServices(array $services)
 	{
 		foreach ($services as $service)
@@ -101,7 +129,7 @@ class Container implements ArrayAccess, ResourceAwareInterface
 		return $this;
 	}
 
-	protected function find($identifier, $arguments)
+	protected function findResource($identifier, $arguments)
 	{
 		if (isset($this->resources[$identifier]))
 		{
@@ -112,9 +140,10 @@ class Container implements ArrayAccess, ResourceAwareInterface
 		{
 			if ($service->provides and in_array($identifier, $service->provides))
 			{
-				$service->doProvide();
+				$service->provide();
+				$service->provides = false;
 
-				return $this->find($identifier, $arguments);
+				return $this->findResource($identifier, $arguments);
 			}
 
 			if ($service->handles($identifier) and $resource = $service->handle($identifier, $arguments))
@@ -123,10 +152,25 @@ class Container implements ArrayAccess, ResourceAwareInterface
 			}
 		}
 
-		if (class_exists($identifier))
+		if (class_exists($identifier, true))
 		{
 			return new Resource($identifier);
 		}
+	}
+
+	public function find($identifier, $arguments)
+	{
+		if ( ! $resource = $this->findResource($identifier, $arguments))
+		{
+			throw new ResolveException('Could not resolve: '.$identifier);
+		}
+
+		if ( ! $resource instanceof Resource)
+		{
+			$resource = new Resource($resource);
+		}
+
+		return $resource;
 	}
 
 	/**
@@ -138,21 +182,26 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	 */
 	public function resolve($identifier, array $arguments = array())
 	{
-		if ($instance = $this->getInstance($identifier)) {
+		// If we find a previously resolved instance
+		if ($instance = $this->getInstance($identifier))
+		{
+			// Return it
 			return $instance;
 		}
 
-		if ( ! $resource = $this->find($identifier, $arguments)) {
-			throw new ResolveException('Could not resolve: '.$identifier);
-		}
+		// Find the resource
+		$resource = $this->find($identifier, $arguments);
 
-		if ( ! $resource instanceof Resource) {
-			$resource = new Resource($resource);
-		}
-
+		// Resolve an instance
 		$instance = $resource->resolve($this, $arguments);
 
-		if ($resource->preferSingleton) {
+		// Apply any supplied extensions
+		$instance = $this->applyExtensions($identifier, $instance);
+
+		// When the resource prefers to be Singleton
+		if ($resource->preferSingleton)
+		{
+			// Store the instance
 			$this->instances[$identifier] = $instance;
 		}
 
@@ -168,16 +217,11 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	 */
 	public function forge($identifier, array $arguments = array())
 	{
-		if ( ! $resource = $this->find($identifier, $arguments))
-		{
-			throw new ResolveException('Could not resolve: '.$identifier);
-		}
+		$resource = $this->find($identifier, $arguments);
+		$instance = $resource->resolve($this, $arguments);
+		$instance = $this->applyExtensions($identifier, $instance);
 
-		if ( ! $resource instanceof Resource) {
-			$resource = new Resource($resource);
-		}
-
-		return $resource->resolve($this, $arguments);
+		return $instance;
 	}
 
 	/**
@@ -200,6 +244,42 @@ class Container implements ArrayAccess, ResourceAwareInterface
 		return $this->instances[$name];
 	}
 
+	public function extend($identifier, Closure $extension)
+	{
+		if ( ! isset($this->extensions[$identifier]))
+		{
+			$this->extensions[$identifier] = array();
+		}
+
+		$this->extensions[$identifier][] = $extension;
+
+		return $this;
+	}
+
+	public function applyExtensions($identifier, $instance)
+	{
+		if ( ! isset($this->extensions[$identifier]))
+		{
+			return $instance;
+		}
+
+		foreach ($this->extensions[$identifier] as $extension)
+		{
+			if ($result = $extension($this, $instance))
+			{
+				$instance = $result;
+			}
+		}
+
+		return $instance;
+	}
+
+	/**
+	 * Retrieve a resolved instance
+	 *
+	 * @param   string      $identifier  instance identifier
+	 * @return  mixed|null  instance or null
+	 */
 	protected function getInstance($identifier)
 	{
 		if (isset($this->instances[$identifier]))
@@ -210,7 +290,7 @@ class Container implements ArrayAccess, ResourceAwareInterface
 
 	public function offsetExists($offset)
 	{
-		if ($this->getInstance($offset) or $this->find($offset, array()))
+		if ($this->getInstance($offset) or $this->findResource($offset, array()))
 		{
 			return true;
 		}

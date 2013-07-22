@@ -10,7 +10,7 @@
 		stopOnFailure="true"
 		syntaxCheck="false">
 	<testsuites>
-		<testsuite name="fuelphp/depenency">
+		<testsuite name="fuel/dependency">
 			<directory suffix=".php">./tests/</directory>
 		</testsuite>
 	</testsuites>

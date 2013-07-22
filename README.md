@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/fuelphp/dependency.png?branch=master)](https://travis-ci.org/fuelphp/dependency)
+
 # FuelPHP - Dependency
 
 This is the FuelPHP Dependency package.

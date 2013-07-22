@@ -1,12 +1,12 @@
 <?php
 
-use FuelPHP\Dependency\Container;
-use FuelPHP\Dependency\Resource;
+use Fuel\Dependency\Container;
+use Fuel\Dependency\Resource;
 
 class ContainerTests extends PHPUnit_Framework_TestCase
 {
 	/**
-	 * @expectedException FuelPHP\Dependency\ResolveException
+	 * @expectedException Fuel\Dependency\ResolveException
 	 */
 	public function testResolveFail()
 	{
@@ -15,7 +15,7 @@ class ContainerTests extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @expectedException FuelPHP\Dependency\ResolveException
+	 * @expectedException Fuel\Dependency\ResolveException
 	 */
 	public function testForgeFail()
 	{
@@ -24,7 +24,7 @@ class ContainerTests extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @expectedException FuelPHP\Dependency\ResolveException
+	 * @expectedException Fuel\Dependency\ResolveException
 	 */
 	public function testAbstractFail()
 	{
@@ -33,7 +33,7 @@ class ContainerTests extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @expectedException FuelPHP\Dependency\ResolveException
+	 * @expectedException Fuel\Dependency\ResolveException
 	 */
 	public function testMultitonFail()
 	{
@@ -60,7 +60,7 @@ class ContainerTests extends PHPUnit_Framework_TestCase
 	{
 		$container = new Container();
 		$container->registerServices(array(new InjectingService()));
-		$this->assertInstanceOf('FuelPHP\Dependency\ServiceProvider', $container['service']);
+		$this->assertInstanceOf('Fuel\Dependency\ServiceProvider', $container['service']);
 	}
 
 	public function testSingletons()
@@ -119,7 +119,7 @@ class ContainerTests extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @expectedException FuelPHP\Dependency\ResolveException
+	 * @expectedException Fuel\Dependency\ResolveException
 	 */
 	public function testConstructorClassFail()
 	{
@@ -128,7 +128,7 @@ class ContainerTests extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @expectedException FuelPHP\Dependency\ResolveException
+	 * @expectedException Fuel\Dependency\ResolveException
 	 */
 	public function testConstructorNoClassFail()
 	{

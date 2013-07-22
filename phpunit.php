@@ -2,7 +2,7 @@
 
 include './vendor/autoload.php';
 
-use FuelPHP\Dependency\ServiceProvider;
+use Fuel\Dependency\ServiceProvider;
 
 foreach (glob(__DIR__.'/stubs/*.php') as $stub)
 {

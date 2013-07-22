@@ -1,6 +1,6 @@
 <?php
 
-use FuelPHP\Dependency\ServiceProvider;
+use Fuel\Dependency\ServiceProvider;
 
 class InjectingService extends ServiceProvider
 {

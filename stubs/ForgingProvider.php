@@ -1,7 +1,7 @@
 <?php
 
-use FuelPHP\Dependency\ServiceProvider;
-use FuelPHP\Dependency\Resource;
+use Fuel\Dependency\ServiceProvider;
+use Fuel\Dependency\Resource;
 
 class ForgingProvider extends ServiceProvider
 {

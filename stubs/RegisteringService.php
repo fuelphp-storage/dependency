@@ -26,7 +26,7 @@ class RegisteringService extends ServiceProvider
 
 		$resolveSingleton = $this->multiton('resolveSingleton');
 
-		$this->register('from.service', function($container, array $arguments) use ($forge, $resolve, $resolveSingleton) {
+		$this->register('from.service', function($container) use ($forge, $resolve, $resolveSingleton) {
 			return (object) compact('forge', 'resolve', 'resolveSingleton');
 		});
 	}

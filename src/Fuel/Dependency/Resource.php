@@ -37,7 +37,8 @@ class Resource
 		if ($this->translation instanceof Closure) {
 			$callback = $this->translation;
 
-			return $callback($container, $arguments);
+			array_unshift($arguments, $container);
+			return call_user_func_array($callback, $arguments);
 		}
 
 		if (is_string($this->translation) and class_exists($this->translation)) {

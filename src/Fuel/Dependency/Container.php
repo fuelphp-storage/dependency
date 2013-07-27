@@ -162,7 +162,9 @@ class Container implements ArrayAccess, ResourceAwareInterface
 
 		if (class_exists($identifier, true))
 		{
-			return new Resource($identifier);
+			$this->resources[$identifier] = new Resource($identifier);
+
+			return $this->resources[$identifier];
 		}
 	}
 

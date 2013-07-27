@@ -296,6 +296,21 @@ class Container implements ArrayAccess, ResourceAwareInterface
 		}
 	}
 
+	/**
+	 * Check if a resolved instance exists
+	 *
+	 * @param   string      $identifier  instance identifier
+	 * @return  mixed|null  instance or null
+	 */
+	public function isInstance($identifier, $name = null)
+	{
+		if ($name !== null)
+		{
+			$identifier = $identifier.'::'.$name;
+		}
+		return isset($this->instances[$identifier]);
+	}
+
 	public function offsetExists($offset)
 	{
 		if ($this->getInstance($offset) or $this->findResource($offset, array()))

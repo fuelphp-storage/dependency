@@ -39,6 +39,7 @@ class ContainerTests extends PHPUnit_Framework_TestCase
 	{
 		$container = new Container();
 		$container->multiton('unknown.dependency');
+		$this->assertFail($container->isInstance('unknown','dependency'));
 	}
 
 	public function testForgingProvider()
@@ -72,6 +73,7 @@ class ContainerTests extends PHPUnit_Framework_TestCase
 		$this->assertTrue($container['single'] !== $container['other']);
 		$this->assertTrue($container['single'] !== $container->forge('single'));
 		$this->assertTrue($container['single'] == $container['other']);
+		$this->assertTrue($container->isInstance('single'));
 	}
 
 	public function testMultitons()
@@ -81,6 +83,7 @@ class ContainerTests extends PHPUnit_Framework_TestCase
 		$this->assertTrue($container->multiton('m', 'name') === $container->multiton('m', 'name'));
 		$this->assertTrue($container->multiton('m', 'name') !== $container->multiton('m', 'other'));
 		$this->assertTrue($container->multiton('m', 'name') == $container->multiton('m', 'other'));
+		$this->assertTrue($container->isInstance('m', 'name'));
 	}
 
 	public function testClassIdentifier()

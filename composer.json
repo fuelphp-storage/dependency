@@ -11,9 +11,13 @@
 			"email": "team@fuelphp.com"
 		}
 	],
-	"autoload": {
-		"psr-0": {
-			"Fuel\\Dependency": "src"
+    "require": {
+        "php": ">=5.4"
+    },
+    "autoload": {
+        "psr-0": {
+			"Fuel\\Dependency": "src/"
 		}
-	}
+	},
+    "minimum-stability": "dev"
 }

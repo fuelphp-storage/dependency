@@ -22,7 +22,7 @@ The container is the primary component of the dependency package and ties all th
 Create a new `Container`
 
 ```
-$container = new FuelPHP\Dependency\Container;
+$container = new Fuel\Dependency\Container;
 ```
 
 ## Resources
@@ -87,7 +87,7 @@ A namespace is a string prefix which maps identifiers to the providers factory m
 
 ```
 <?php
-use FuelPHP\Dependency\ServiceProvider;
+use Fuel\Dependency\ServiceProvider;
 
 class MyProvider extends ServiceProvider
 {

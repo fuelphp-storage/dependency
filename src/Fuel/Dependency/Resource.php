@@ -16,8 +16,14 @@ use ReflectionParameter;
 
 class Resource
 {
+	/**
+	 * @var  mixed  $translation  translation
+	 */
 	public $translation;
 
+	/**
+	 * @var  bool  $preferSingleton  wether the resource preferes to be a singleton
+	 */
 	public $preferSingleton = false;
 
 	public function __construct($translation)
@@ -25,6 +31,9 @@ class Resource
 		$this->translation = $translation;
 	}
 
+	/**
+	 * Set the resource to prefer singleton usage
+	 */
 	public function preferSingleton($prefer = true)
 	{
 		$this->preferSingleton = $prefer;
@@ -32,33 +41,34 @@ class Resource
 		return $this;
 	}
 
+	/**
+	 * Resolve a constructor parameter
+	 *
+	 * @param   Fuel\Dependency\Container  $container   container
+	 * @param   array                      $parameters  constructor parameters
+	 * @return  mixed  resolved dependency
+	 */
 	public function resolve(Container $container, array $arguments = array())
 	{
-		if ($this->translation instanceof Closure) {
+		if (is_callable($this->translation))
+		{
 			$callback = $this->translation;
-
 			array_unshift($arguments, $container);
+
 			return call_user_func_array($callback, $arguments);
 		}
 
-		if (is_string($this->translation) and class_exists($this->translation)) {
-			return $this->create($container, $arguments);
-		}
-
-		return $this->translation;
-	}
-
-	protected function create(Container $container, array $arguments = array())
-	{
 		$class = new ReflectionClass($this->translation);
 
 		// Raise an error when the class is not instantiatable.
-		if ( ! $class->isInstantiable()) {
+		if ( ! $class->isInstantiable())
+		{
 			throw new ResolveException('Class '.$this->translation.' is not instantiable.');
 		}
 
 		// Return a new instance when there is no constructor
-		if ( ! $constructor = $class->getConstructor()) {
+		if ( ! $constructor = $class->getConstructor())
+		{
 			return new $this->translation;
 		}
 
@@ -68,25 +78,28 @@ class Resource
 		// Remove the parameters which are supplied
 		$parameters = array_slice($parameters, count($arguments));
 
-		// Resolve the remaining parameters;
-		$parameters = $this->resolveParameters($container, $parameters);
-
-		// return a new instance with arguments.
-		return $class->newInstanceArgs(array_merge($arguments, $parameters));
-	}
-
-	protected function resolveParameters(Container $container, $parameters)
-	{
-		foreach ($parameters as $index => $parameter) {
-			$parameters[$index] = $this->resolveParameter($container, $parameter);
+		// Resolve the remaining parameters
+		foreach ($parameters as $parameter)
+		{
+			$arguments[] = $this->resolveParameter($container, $parameter);
 		}
 
-		return $parameters;
+		// return a new instance with arguments.
+		return $class->newInstanceArgs($arguments);
 	}
 
+	/**
+	 * Resolve a constructor parameter
+	 *
+	 * @param   Fuel\Dependency\Container  $container  container
+	 * @param   ReflectionParameter        $parameter  parameter
+	 * @throws  Fuel\Dependency\ResolveException  when the parameter is unresolvable
+	 * @return  mixed  resolved dependency
+	 */
 	protected function resolveParameter(Container $container, ReflectionParameter $parameter)
 	{
-		if ($class = $parameter->getClass()) {
+		if ($class = $parameter->getClass())
+		{
 			try {
 				return $container->resolve($class->name);
 			} catch (ResolveException $e) {
@@ -94,7 +107,8 @@ class Resource
 			}
 		}
 
-		if ($parameter->isDefaultValueAvailable()) {
+		if ($parameter->isDefaultValueAvailable())
+		{
 			return $parameter->getDefaultValue();
 		}
 

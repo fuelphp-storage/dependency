@@ -106,6 +106,11 @@ class Container implements ArrayAccess, ResourceAwareInterface
 		return $this;
 	}
 
+	public function getStack($identifier)
+	{
+		return new Stack($this, $identifier);
+	}
+
 	/**
 	 * Inject an instance
 	 *

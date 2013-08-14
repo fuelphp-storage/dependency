@@ -166,4 +166,20 @@ class ContainerTests extends PHPUnit_Framework_TestCase
 		$this->assertEquals('Frank', $instance->name);
 		$this->assertEquals('de Jonge', $instance->surname);
 	}
+
+	public function testStack()
+	{
+		$container = new Container;
+		$container->register('something', function ($container, $id = null) {
+			return (object) ['id' => $id];
+		});
+
+		$stack = $container->getStack('something');
+		$this->assertInstanceOf('stdClass', $stack->current());
+		$this->assertInstanceOf('stdClass', $stack->push());
+		$this->assertInstanceOf('stdClass', $stack->current());
+		$this->assertInstanceOf('stdClass', $stack->pop());
+		$this->assertInstanceOf('stdClass', $stack->pop());
+		$this->assertNull($stack->pop());
+	}
 }

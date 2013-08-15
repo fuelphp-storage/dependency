@@ -181,6 +181,7 @@ class ContainerTests extends PHPUnit_Framework_TestCase
 		$this->assertEquals(1, count($stack));
 		$this->assertInstanceOf('stdClass', $stack->pop());
 		$this->assertNull($stack->pop());
+		$this->assertNull($stack->top());
 		$this->assertEquals(0, count($stack));
 	}
 
@@ -198,6 +199,7 @@ class ContainerTests extends PHPUnit_Framework_TestCase
 		$this->assertEquals(1, count($stack));
 		$this->assertInstanceOf('stdClass', $stack->pop());
 		$this->assertNull($stack->pop());
+		$this->assertNull($stack->top());
 		$this->assertEquals(0, count($stack));
 	}
 }

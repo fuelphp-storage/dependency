@@ -31,7 +31,12 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	protected $services = array();
 
 	/**
-	 * @var  array  $extensions  resource extensions
+	 * @var  array  $extends  resource specific extensions
+	 */
+	protected $extends = array();
+
+	/**
+	 * @var  array  $extensions  resource generic and reusable extensions
 	 */
 	protected $extensions = array();
 
@@ -39,7 +44,8 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	 * Register a resource
 	 *
 	 * @param   string  $identifier  resource identifier
-	 * @param   mixed   $resource  resource
+	 * @param   mixed   $resource    resource
+	 *
 	 * @return  $this
 	 */
 	public function register($identifier, $resource)
@@ -58,7 +64,8 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	 * Register a singleton resource
 	 *
 	 * @param   string  $identifier  resource identifier
-	 * @param   mixed   $resource  resource
+	 * @param   mixed   $resource    resource
+	 *
 	 * @return  $this
 	 */
 	public function registerSingleton($identifier, $resource)
@@ -73,6 +80,7 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	 * Register a service provider
 	 *
 	 * @param   ServiceProvider  $service
+	 *
 	 * @return  $this
 	 */
 	public function registerService(ServiceProvider $service)
@@ -94,6 +102,7 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	 * Register service providers
 	 *
 	 * @param   ServiceProvider[] $service
+	 *
 	 * @return  $this
 	 */
 	public function registerServices(array $services)
@@ -106,6 +115,13 @@ class Container implements ArrayAccess, ResourceAwareInterface
 		return $this;
 	}
 
+	/**
+	 * Get a new Stack instance
+	 *
+	 * @param  string  $identifier  optional resource identifier
+	 *
+	 * @return  Stack|ObjectStack
+	 */
 	public function getStack($identifier = null)
 	{
 		return $identifier === null ? new Stack($this) : new ObjectStack($this, $identifier);
@@ -115,7 +131,8 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	 * Inject an instance
 	 *
 	 * @param   string  $identifier  instance identifier
-	 * @param   mixed   $instance  instance
+	 * @param   mixed   $instance    instance
+	 *
 	 * @return  $this
 	 */
 	public function inject($identifier, $instance)
@@ -129,7 +146,6 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	 * Remove an instance
 	 *
 	 * @param   string  $identifier  instance identifier
-	 * @param   mixed   $instance  instance
 	 * @return  $this
 	 */
 	public function remove($identifier)
@@ -142,6 +158,14 @@ class Container implements ArrayAccess, ResourceAwareInterface
 		return $this;
 	}
 
+	/**
+	 * Find a resource identified by the identifier passed
+	 *
+	 * @param   string  $identifier  instance identifier
+	 * @param   array   $arguments   arguments to pass to the resource handler
+	 *
+	 * @return  mixed  the found resource, or null if not found
+	 */
 	protected function findResource($identifier, $arguments)
 	{
 		if (isset($this->resources[$identifier]))
@@ -171,6 +195,16 @@ class Container implements ArrayAccess, ResourceAwareInterface
 		}
 	}
 
+	/**
+	 * Find and return a new instance of a resource
+	 *
+	 * @param   string  $identifier  instance identifier
+	 * @param   array   $arguments   arguments to pass to the finder
+	 *
+	 * @throws  ResolveException  if the identifier can not be resolved
+	 *
+	 * @return  mixed  the found resource, or null if not found
+	 */
 	public function find($identifier, $arguments)
 	{
 		if ( ! $resource = $this->findResource($identifier, $arguments))
@@ -226,6 +260,7 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	 *
 	 * @param   string  $identifier   resource identifier
 	 * @param   array   $arguments  constructor arguments
+	 *
 	 * @return  mixed   new resource instance
 	 */
 	public function forge($identifier, array $arguments = array())
@@ -257,27 +292,63 @@ class Container implements ArrayAccess, ResourceAwareInterface
 		return $this->instances[$name];
 	}
 
-	public function extend($identifier, Closure $extension)
+	/**
+	 * Attach extensions to an identifier
+	 *
+	 * @param  string          $identifier  the resource identifier to extend
+	 * @param  string|Closure  $extension   the generic extension, or a closure implementing the extension
+	 *
+	 * @return $this
+	 */
+	public function extend($identifier, $extension)
 	{
-		if ( ! isset($this->extensions[$identifier]))
+		if ( ! isset($this->extends[$identifier]))
 		{
-			$this->extensions[$identifier] = array();
+			$this->extends[$identifier] = array();
 		}
 
-		$this->extensions[$identifier][] = $extension;
+		$this->extends[$identifier][] = $extension;
 
 		return $this;
 	}
 
+	/**
+	 * Define a generic resource extension
+	 *
+	 * @param  string   $identifier  the extension identifier
+	 * @param  Closure  $extension   the closure implementing the extension
+	 *
+	 * @return $this
+	 */
+	public function extension($identifier, Closure $extension)
+	{
+		$this->extensions[$identifier] = $extension;
+
+		return $this;
+	}
+
+	/**
+	 * Apply all defined extensions to the instance
+	 *
+	 * @param   string  $identifier   resource identifier
+	 * @param   mixed   $instance     the resource instance to extend
+	 *
+	 * @return  mixed  the extended instance
+	 */
 	public function applyExtensions($identifier, $instance)
 	{
-		if ( ! isset($this->extensions[$identifier]))
+		if ( ! isset($this->extends[$identifier]))
 		{
 			return $instance;
 		}
 
-		foreach ($this->extensions[$identifier] as $extension)
+		foreach ($this->extends[$identifier] as $extension)
 		{
+			if (is_string($extension) and isset($this->extensions[$extension]))
+			{
+				$extension = $this->extensions[$extension];
+			}
+
 			if ($result = $extension($this, $instance))
 			{
 				$instance = $result;

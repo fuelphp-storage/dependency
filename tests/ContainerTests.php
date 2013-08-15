@@ -146,7 +146,7 @@ class ContainerTests extends PHPUnit_Framework_TestCase
 		$this->assertNull($result->dep);
 	}
 
-	public function testExtensions()
+	public function testExtends()
 	{
 		$container = new Container;
 		$container->register('id', 'stdClass');
@@ -163,6 +163,37 @@ class ContainerTests extends PHPUnit_Framework_TestCase
 
 		$instance = $container['id'];
 
+		$this->assertEquals('Frank', $instance->name);
+		$this->assertEquals('de Jonge', $instance->surname);
+	}
+
+	public function testExtensions()
+	{
+		$container = new Container;
+		$container->register('id1', 'stdClass');
+		$container->register('id2', 'stdClass');
+
+		$container->extension('addName', function($container, $instance) {
+			$instance->name = 'Frank';
+			$instance->surname = 'de Jonge';
+		});
+
+		$container->extend('id1', 'addName');
+		$container->extend('id2', 'addName');
+
+		$container->extension('addSurname', function($container, $instance) {
+			$instance->surname = 'de Oude';
+
+			return $instance;
+		});
+
+		$container->extend('id1', 'addSurname');
+
+		$instance = $container['id1'];
+		$this->assertEquals('Frank', $instance->name);
+		$this->assertEquals('de Oude', $instance->surname);
+
+		$instance = $container['id2'];
 		$this->assertEquals('Frank', $instance->name);
 		$this->assertEquals('de Jonge', $instance->surname);
 	}

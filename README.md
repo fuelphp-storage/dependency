@@ -71,8 +71,25 @@ $container->register('extendable', 'stdClass');
 
 $container->extend('extendable', function($container, $instance)
 {
-	$instance->extened = true;
+	$instance->extended = true;
 });
+
+$instance = $container->resolve('extendable');
+$instance->extended;
+// > true
+```
+
+If you have extensions you want to apply to multiple resources, you can also define generic extensions:
+
+```
+$container->register('extendable', 'stdClass');
+
+$container->extension('isExtended', function($container, $instance)
+{
+	$instance->extended = true;
+});
+
+$container->extend('extendable', 'isExtended');
 
 $instance = $container->resolve('extendable');
 $instance->extended;
@@ -93,7 +110,7 @@ class MyProvider extends ServiceProvider
 {
 	public $namespace = 'my';
 	public $provides = array('some.identifier', 'other.resource');
-	
+
 
 	public function factory($suffix, array $arguments = array())
 	{
@@ -103,7 +120,7 @@ class MyProvider extends ServiceProvider
 
 		return $instance;
 	}
-	
+
 	public function provide()
 	{
 		$this->register('some.identifier', 'stdClass');

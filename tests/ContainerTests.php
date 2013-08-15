@@ -55,6 +55,17 @@ class ContainerTests extends PHPUnit_Framework_TestCase
 		$container = new Container();
 		$container->registerService(new RegisteringService());
 		$this->assertInstanceOf('stdClass', $container['from.service']);
+		$this->assertEquals('This Works!', $container['from.service']->forge->extension);
+	}
+
+	public function testExtensionService()
+	{
+		$container = new Container();
+		$container->registerService(new ExtensionService());
+		$container->register('id', 'stdClass');
+		$container->extend('id', 'extension');
+		$instance = $container['id'];
+		$this->assertEquals('This Works!', $instance->extension);
 	}
 
 	public function testInjectingService()

@@ -11,6 +11,10 @@ class RegisteringService extends ServiceProvider
 		$this->registerSingleton('forge', function($container) {
 			return (object) compact('container', 'arguments');
 		});
+		$this->extend('forge', function($container, $instance)
+		{
+			$instance->extension = 'This Works!';
+		});
 
 		$forge = $this->forge('forge');
 

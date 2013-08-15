@@ -10,6 +10,8 @@
 
 namespace Fuel\Dependency;
 
+use Closure;
+
 abstract class ServiceProvider implements ResourceAwareInterface
 {
 	/**
@@ -31,6 +33,7 @@ abstract class ServiceProvider implements ResourceAwareInterface
 	 * Container injection
 	 *
 	 * @param   Container  $container  container
+	 *
 	 * @return  $this
 	 */
 	public function setContainer(Container $container)
@@ -44,6 +47,7 @@ abstract class ServiceProvider implements ResourceAwareInterface
 	 * Check wether the the identifier is handles by the service provider
 	 *
 	 * @param   string   $identifier
+	 *
 	 * @return  boolean  wether the identifier is handled by the provider
 	 */
 	public function handles($identifier)
@@ -67,7 +71,8 @@ abstract class ServiceProvider implements ResourceAwareInterface
 	 * Register a resource
 	 *
 	 * @param   string  $identifier  resource identifier
-	 * @param   mixed   $resource  resource
+	 * @param   mixed   $resource    resource
+	 *
 	 * @return  $this
 	 */
 	public function register($identifier, $resource)
@@ -81,7 +86,8 @@ abstract class ServiceProvider implements ResourceAwareInterface
 	 * Register a singleton resource
 	 *
 	 * @param   string  $identifier  resource identifier
-	 * @param   mixed   $resource  resource
+	 * @param   mixed   $resource    resource
+	 *
 	 * @return  $this
 	 */
 	public function registerSingleton($identifier, $resource)
@@ -95,7 +101,8 @@ abstract class ServiceProvider implements ResourceAwareInterface
 	 * Resolve an instance from a resource
 	 *
 	 * @param   string  $identifier   resource identifier
-	 * @param   array   $arguments  constructor arguments
+	 * @param   array   $arguments    constructor arguments
+	 *
 	 * @return  mixed   resource instance
 	 */
 	public function resolve($identifier, array $arguments = array())
@@ -107,8 +114,9 @@ abstract class ServiceProvider implements ResourceAwareInterface
 	 * Resolve a named instance from a resource
 	 *
 	 * @param   string  $identifier   resource identifier
-	 * @param   string  $name       instance name
-	 * @param   array   $arguments  constructor arguments
+	 * @param   string  $name         instance name
+	 * @param   array   $arguments    constructor arguments
+	 *
 	 * @return  mixed   resource instance
 	 */
 	public function multiton($identifier, $name = '__default__', array $arguments = array())
@@ -120,6 +128,7 @@ abstract class ServiceProvider implements ResourceAwareInterface
 	 * Convert a resource instance to a Singleton Resource
 	 *
 	 * @param   mixed      $instance  resource instance
+	 *
 	 * @return  Singleton  singleton resource
 	 */
 	public function singleton($instance)
@@ -136,7 +145,8 @@ abstract class ServiceProvider implements ResourceAwareInterface
 	 * Inject an instance
 	 *
 	 * @param   string  $identifier  instance identifier
-	 * @param   mixed   $instance  instance
+	 * @param   mixed   $instance    instance
+	 *
 	 * @return  $this
 	 */
 	public function inject($identifier, $instance)
@@ -150,11 +160,42 @@ abstract class ServiceProvider implements ResourceAwareInterface
 	 * Create a new instance from a resource
 	 *
 	 * @param   string  $identifier   resource identifier
-	 * @param   array   $arguments  constructor arguments
+	 * @param   array   $arguments    constructor arguments
+	 *
 	 * @return  mixed   new resource instance
 	 */
 	public function forge($identifier, array $arguments = array())
 	{
-		$this->container->forge($identifier, $arguments);
+		return $this->container->forge($identifier, $arguments);
+	}
+
+	/**
+	 * Define a generic resource extension
+	 *
+	 * @param  string   $identifier  the extension identifier
+	 * @param  Closure  $extension   the closure implementing the extension
+	 *
+	 * @return  $this
+	 */
+	public function extension($identifier, Closure $extension)
+	{
+		$this->container->extension($identifier, $extension);
+
+		return $this;
+	}
+
+	/**
+	 * Attach extensions to an identifier
+	 *
+	 * @param  string          $identifier  the resource identifier to extend
+	 * @param  string|Closure  $extension   the generic extension, or a closure implementing the extension
+	 *
+	 * @return $this
+	 */
+	public function extend($identifier, $extension)
+	{
+		$this->container->extend($identifier, $extension);
+
+		return $this;
 	}
 }

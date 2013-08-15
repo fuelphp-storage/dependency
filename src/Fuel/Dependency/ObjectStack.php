@@ -16,7 +16,7 @@ use Countable;
 /**
  *
  */
-class Stack implements Countable
+class ObjectStack implements Countable
 {
 	/**
 	 * @var
@@ -29,14 +29,21 @@ class Stack implements Countable
 	protected $container;
 
 	/**
+	 * @var
+	 */
+	protected $identifier;
+
+	/**
 	 * Constructor
 	 *
 	 * @param   Fuel\Depedency\Container  $container   container
+	 * @param   string                    $identifier  identifier
 	 */
-	public function __construct(Container $container)
+	public function __construct(Container $container, $identifier)
 	{
 		$this->stack = new SplStack;
 		$this->container = $container;
+		$this->identifier = $identifier;
 	}
 
 	/**
@@ -45,8 +52,9 @@ class Stack implements Countable
 	 * @param   array  $arguments  constructor arguments
 	 * @return  object  resolved dependency
 	 */
-	public function push($instance)
+	public function push(array $arguments = array())
 	{
+		$instance = $this->container->resolve($this->identifier, $arguments);
 		$this->stack->push($instance);
 
 		return $instance;

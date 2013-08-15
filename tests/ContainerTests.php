@@ -174,12 +174,30 @@ class ContainerTests extends PHPUnit_Framework_TestCase
 			return (object) ['id' => $id];
 		});
 
-		$stack = $container->getStack('something');
-		$this->assertInstanceOf('stdClass', $stack->current());
-		$this->assertInstanceOf('stdClass', $stack->push());
-		$this->assertInstanceOf('stdClass', $stack->current());
-		$this->assertInstanceOf('stdClass', $stack->pop());
+		$stack = $container->getStack();
+		$this->assertNull($stack->pop());
+		$this->assertInstanceOf('stdClass', $stack->push($container->resolve('something')));
+		$this->assertInstanceOf('stdClass', $stack->top());
+		$this->assertEquals(1, count($stack));
 		$this->assertInstanceOf('stdClass', $stack->pop());
 		$this->assertNull($stack->pop());
+		$this->assertEquals(0, count($stack));
+	}
+
+	public function testObjectStack()
+	{
+		$container = new Container;
+		$container->register('something', function ($container, $id = null) {
+			return (object) ['id' => $id];
+		});
+
+		$stack = $container->getStack('something');
+		$this->assertNull($stack->pop());
+		$this->assertInstanceOf('stdClass', $stack->push());
+		$this->assertInstanceOf('stdClass', $stack->top());
+		$this->assertEquals(1, count($stack));
+		$this->assertInstanceOf('stdClass', $stack->pop());
+		$this->assertNull($stack->pop());
+		$this->assertEquals(0, count($stack));
 	}
 }

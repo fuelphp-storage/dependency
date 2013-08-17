@@ -55,7 +55,27 @@ class Resource
 			$callback = $this->translation;
 			array_unshift($arguments, $container);
 
-			return call_user_func_array($callback, $arguments);
+			// calling the method directly is faster then call_user_func_array() !
+			switch (count($arguments))
+			{
+				case 0:
+					return $callback();
+
+				case 1:
+					return $callback($arguments[0]);
+
+				case 2:
+					return $callback($arguments[0], $arguments[1]);
+
+				case 3:
+					return $callback($arguments[0], $arguments[1], $arguments[2]);
+
+				case 4:
+					return $callback($arguments[0], $arguments[1], $arguments[2], $arguments[3]);
+
+				default:
+					return call_user_func_array($callback, $arguments);
+			}
 		}
 
 		$class = new ReflectionClass($this->translation);

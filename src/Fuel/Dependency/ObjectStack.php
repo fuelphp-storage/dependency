@@ -74,7 +74,7 @@ class ObjectStack implements Countable
 	}
 
 	/**
-	 * Get the currect/top instance off the stack
+	 * Get the current/top instance off the stack
 	 *
 	 * @return  object  instance
 	 */
@@ -83,6 +83,19 @@ class ObjectStack implements Countable
 		if ( ! $this->stack->isEmpty())
 		{
 			return $this->stack->top();
+		}
+	}
+
+	/**
+	 * Get the first/bottom instance off the stack
+	 *
+	 * @return  object  instance
+	 */
+	public function bottom()
+	{
+		if ( ! $this->stack->isEmpty())
+		{
+			return $this->stack->bottom();
 		}
 	}
 

@@ -212,36 +212,42 @@ class ContainerTests extends PHPUnit_Framework_TestCase
 	public function testStack()
 	{
 		$container = new Container;
-		$container->register('something', function ($container, $id = null) {
-			return (object) ['id' => $id];
+		$container->register('something', function ($container, $id = null, $var2 = null) {
+			return (object) ['id' => $id, 'var2' => $var2];
 		});
 
 		$stack = $container->getStack();
 		$this->assertNull($stack->pop());
-		$this->assertInstanceOf('stdClass', $stack->push($container->resolve('something')));
+		$this->assertInstanceOf('stdClass', $stack->push($container->resolve('something', array('id', 'var2'))));
 		$this->assertInstanceOf('stdClass', $stack->top());
+		$this->assertInstanceOf('stdClass', $stack->bottom());
+		$this->assertEquals('var2', $stack->bottom()->var2);
 		$this->assertEquals(1, count($stack));
 		$this->assertInstanceOf('stdClass', $stack->pop());
 		$this->assertNull($stack->pop());
 		$this->assertNull($stack->top());
+		$this->assertNull($stack->bottom());
 		$this->assertEquals(0, count($stack));
 	}
 
 	public function testObjectStack()
 	{
 		$container = new Container;
-		$container->register('something', function ($container, $id = null) {
-			return (object) ['id' => $id];
+		$container->register('something', function ($container, $id = null, $var2 = null, $var3 = null) {
+			return (object) ['id' => $id, 'var2' => $var2, 'var3' => $var3];
 		});
 
 		$stack = $container->getStack('something');
 		$this->assertNull($stack->pop());
-		$this->assertInstanceOf('stdClass', $stack->push());
+		$this->assertInstanceOf('stdClass', $stack->push(array('id', 'var2', 'var3')));
 		$this->assertInstanceOf('stdClass', $stack->top());
+		$this->assertInstanceOf('stdClass', $stack->bottom());
+		$this->assertEquals('var3', $stack->bottom()->var3);
 		$this->assertEquals(1, count($stack));
 		$this->assertInstanceOf('stdClass', $stack->pop());
 		$this->assertNull($stack->pop());
 		$this->assertNull($stack->top());
+		$this->assertNull($stack->bottom());
 		$this->assertEquals(0, count($stack));
 	}
 }

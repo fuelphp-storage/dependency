@@ -50,17 +50,6 @@ $container->register('closure.object', function() {
 // Resolve
 $instance = $container->resolve('closure.object');
 ```
-or return a string class name
-
-```
-// Register
-$container->register('closure.string', function() {
-	return 'stdClass';
-});
-
-// Resolve
-$instance = $container->resolve('closure.string');
-```
 
 ## Extending
 

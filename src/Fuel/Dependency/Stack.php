@@ -79,6 +79,19 @@ class Stack implements Countable
 	}
 
 	/**
+	 * Get the first/bottom instance off the stack
+	 *
+	 * @return  object  instance
+	 */
+	public function bottom()
+	{
+		if ( ! $this->stack->isEmpty())
+		{
+			return $this->stack->bottom();
+		}
+	}
+
+	/**
 	 * Get the number of instances on the stack
 	 *
 	 * @return  int  count

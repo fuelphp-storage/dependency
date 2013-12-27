@@ -100,4 +100,14 @@ class Stack implements Countable
 	{
 		return count($this->stack);
 	}
+
+	/**
+	 * Pass all other calls directly on to the stack
+	 *
+	 * @return mixed
+	 */
+	public function __call($name, $args)
+	{
+		return call_user_func_array(array($this->stack, $name), $args);
+	}
 }

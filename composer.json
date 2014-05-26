@@ -15,9 +15,8 @@
         "php": ">=5.4"
     },
     "autoload": {
-        "psr-0": {
-			"Fuel\\Dependency": "src/"
+        "psr-4": {
+			"Fuel\\Dependency\\": "src/"
 		}
-	},
-    "minimum-stability": "dev"
+	}
 }

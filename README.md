@@ -4,6 +4,11 @@
 
 This is the FuelPHP Dependency package.
 
+[![Build Status](https://travis-ci.org/fuelphp/dependency.svg?branch=master)](https://travis-ci.org/fuelphp/dependency)
+[![Code Coverage](https://scrutinizer-ci.com/g/fuelphp/dependency/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/fuelphp/dependency/?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/fuelphp/dependency/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/fuelphp/dependency/?branch=master)
+[![HHVM Status](http://hhvm.h4cc.de/badge/fuelphp/dependency.svg)](http://hhvm.h4cc.de/package/fuelphp/dependency)
+
 ## Contents
 
 The Dependency package is a dependency injection implementation for the FuelPHP framework. In order to provide this functionality the package is responsible for:

@@ -90,6 +90,47 @@ $instance->extended;
 // > true
 ```
 
+## Automatic Injection (Inversion of Control)
+
+Inversion of Control (IOC) allows classes registered with the DIC to have dependencies automatically injected when
+resolved. This allows behaviours to be injected without needing to create hard dependencies between classes.
+
+At this moment the current implementation is slightly flawed in that the class that that is being injected has to be
+an actual class, meaning that other classes cannot be aliased and injected.
+
+```php
+<?php
+
+class Hello
+{
+	public function speak()
+	{
+		echo "Hello world\n";
+	}
+}
+
+class Main
+{
+	protected $hello;
+
+	public function __construct(Hello $fake)
+	{
+		$this->hello = $fake;
+	}
+
+	public function talk()
+	{
+		$this->hello->speak();
+	}
+}
+
+$container = new Fuel\Dependency\Container;
+$container->register('Hello', 'Hello');
+$container->register('Main', 'Main');
+$container->resolve('Main')->talk();
+
+```
+
 ## Service Providers
 
 Service providers are used to expose packages to the Container. A Service

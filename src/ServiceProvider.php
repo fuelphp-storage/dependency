@@ -64,7 +64,7 @@ abstract class ServiceProvider implements ResourceAwareInterface
 	{
 		$name = substr($this->namespace, strlen($this->namespace));
 
-		return $this->factory($name, $arguments);
+		return $this->forge($name, $arguments);
 	}
 
 	/**

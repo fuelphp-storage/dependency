@@ -175,6 +175,7 @@ class Container implements ArrayAccess, ResourceAwareInterface
 
 		foreach ($this->services as $service)
 		{
+			/** @type ServiceProvider $service */
 			if ($service->provides and in_array($identifier, $service->provides))
 			{
 				$service->provide();

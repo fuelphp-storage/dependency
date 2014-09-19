@@ -1,12 +1,13 @@
 <?php
 
-use Fuel\Dependency\Container;
-use Fuel\Dependency\Resource;
+namespace Fuel\Dependency;
 
-class ContainerTests extends PHPUnit_Framework_TestCase
+use Codeception\TestCase\Test;
+
+class ContainerTest extends Test
 {
 	/**
-	 * @expectedException Fuel\Dependency\ResolveException
+	 * @expectedException \Fuel\Dependency\ResolveException
 	 */
 	public function testResolveFail()
 	{
@@ -15,7 +16,7 @@ class ContainerTests extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @expectedException Fuel\Dependency\ResolveException
+	 * @expectedException \Fuel\Dependency\ResolveException
 	 */
 	public function testForgeFail()
 	{
@@ -24,7 +25,7 @@ class ContainerTests extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @expectedException Fuel\Dependency\ResolveException
+	 * @expectedException \Fuel\Dependency\ResolveException
 	 */
 	public function testAbstractFail()
 	{
@@ -33,19 +34,19 @@ class ContainerTests extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @expectedException Fuel\Dependency\ResolveException
+	 * @expectedException \Fuel\Dependency\ResolveException
 	 */
 	public function testMultitonFail()
 	{
 		$container = new Container();
 		$container->multiton('unknown.dependency');
-		$this->assertFail($container->isInstance('unknown','dependency'));
+		$container->isInstance('unknown','dependency');
 	}
 
 	public function testForgingProvider()
 	{
 		$container = new Container();
-		$container->registerService(new ForgingProvider());
+		$container->registerService(new \ForgingProvider());
 		$this->assertInstanceOf('stdClass', $container['forging.name']);
 		$this->assertInstanceOf('stdClass', $container->forge('forging.name', array(true)));
 	}
@@ -53,7 +54,7 @@ class ContainerTests extends PHPUnit_Framework_TestCase
 	public function testRegisteringService()
 	{
 		$container = new Container();
-		$container->registerService(new RegisteringService());
+		$container->registerService(new \RegisteringService());
 		$this->assertInstanceOf('stdClass', $container['from.service']);
 		$this->assertEquals('This Works!', $container['from.service']->forge->extension);
 	}
@@ -61,7 +62,7 @@ class ContainerTests extends PHPUnit_Framework_TestCase
 	public function testExtensionService()
 	{
 		$container = new Container();
-		$container->registerService(new ExtensionService());
+		$container->registerService(new \ExtensionService());
 		$container->register('id', 'stdClass');
 		$container->extend('id', 'extension');
 		$instance = $container['id'];
@@ -71,7 +72,7 @@ class ContainerTests extends PHPUnit_Framework_TestCase
 	public function testInjectingService()
 	{
 		$container = new Container();
-		$container->registerServices(array(new InjectingService()));
+		$container->registerServices(array(new \InjectingService()));
 		$this->assertInstanceOf('Fuel\Dependency\ServiceProvider', $container['service']);
 	}
 
@@ -106,8 +107,8 @@ class ContainerTests extends PHPUnit_Framework_TestCase
 	public function testClassIdentifierForge()
 	{
 		$container = new Container;
-		$container->registerService(new InjectingService);
-		$container->registerService(new ForgingProvider);
+		$container->registerService(new \InjectingService);
+		$container->registerService(new \ForgingProvider);
 		$this->assertInstanceOf('stdClass', $container->forge('forging.name'));
 	}
 
@@ -116,7 +117,7 @@ class ContainerTests extends PHPUnit_Framework_TestCase
 		$container = new Container;
 		$this->assertFalse(isset($container['offset']));
 		$this->assertTrue(isset($container['stdClass']));
-		$container['offset'] = new stdClass;
+		$container['offset'] = new \stdClass;
 		$this->assertTrue(isset($container['offset']));
 		$container->inject('stuff', 'stuff');
 		$this->assertTrue(isset($container['stuff']));
@@ -133,7 +134,7 @@ class ContainerTests extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @expectedException Fuel\Dependency\ResolveException
+	 * @expectedException \Fuel\Dependency\ResolveException
 	 */
 	public function testConstructorClassFail()
 	{
@@ -142,7 +143,7 @@ class ContainerTests extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @expectedException Fuel\Dependency\ResolveException
+	 * @expectedException \Fuel\Dependency\ResolveException
 	 */
 	public function testConstructorNoClassFail()
 	{

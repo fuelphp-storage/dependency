@@ -145,7 +145,7 @@ class MyProvider extends ServiceProvider
 	public $provides = array('some.identifier', 'other.resource');
 
 
-	public function factory($suffix, array $arguments = array())
+	public function forge($suffix, array $arguments = array())
 	{
 		$instance = new Something($suffix);
 		$instance->configure($arguments);

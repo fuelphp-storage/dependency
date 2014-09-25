@@ -25,7 +25,7 @@ abstract class ServiceProvider implements ResourceAwareInterface
 	protected $container;
 
 	/**
-	 * @var  array  @provides  list of identifiers
+	 * @var  array Provides list of identifiers
 	 */
 	public $provides;
 
@@ -44,11 +44,11 @@ abstract class ServiceProvider implements ResourceAwareInterface
 	}
 
 	/**
-	 * Check wether the the identifier is handles by the service provider
+	 * Check weather the the identifier is handles by the service provider
 	 *
 	 * @param   string   $identifier
 	 *
-	 * @return  boolean  wether the identifier is handled by the provider
+	 * @return  boolean  weather the identifier is handled by the provider
 	 */
 	public function handles($identifier)
 	{
@@ -62,7 +62,7 @@ abstract class ServiceProvider implements ResourceAwareInterface
 
 	public function handle($identifier, $arguments)
 	{
-		$name = substr($this->namespace, strlen($this->namespace));
+		$name = substr($identifier, strlen($this->namespace)+1);
 
 		return $this->forge($name, $arguments);
 	}
@@ -70,10 +70,10 @@ abstract class ServiceProvider implements ResourceAwareInterface
 	/**
 	 * Register a resource
 	 *
-	 * @param   string  $identifier  resource identifier
-	 * @param   mixed   $resource    resource
+	 * @param string $identifier resource identifier
+	 * @param mixed  $resource   resource
 	 *
-	 * @return  $this
+	 * @return $this
 	 */
 	public function register($identifier, $resource)
 	{

@@ -26,7 +26,7 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	protected $instances = array();
 
 	/**
-	 * @var  array  $services  service providers
+	 * @var  ServiceProvider[]  $services  service providers
 	 */
 	protected $services = array();
 
@@ -194,6 +194,8 @@ class Container implements ArrayAccess, ResourceAwareInterface
 		{
 			return $this->resources[$identifier] = new Resource($identifier);
 		}
+
+		return null;
 	}
 
 	/**

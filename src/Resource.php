@@ -44,9 +44,9 @@ class Resource
 	/**
 	 * Resolve a constructor parameter
 	 *
-	 * @param   Fuel\Dependency\Container  $container   container
-	 * @param   array                      $parameters  constructor parameters
-	 * @return  mixed  resolved dependency
+	 * @param  \Fuel\Dependency\Container $container  container
+	 * @param  array                      $parameters constructor parameters
+	 * @return mixed  resolved dependency
 	 */
 	public function resolve(Container $container, array $arguments = array())
 	{

@@ -17,12 +17,12 @@ use ReflectionParameter;
 class Resource
 {
 	/**
-	 * @var  mixed  $translation  translation
+	 * @var mixed $translation
 	 */
 	public $translation;
 
 	/**
-	 * @var  bool  $preferSingleton  wether the resource preferes to be a singleton
+	 * @var boolean $preferSingleton
 	 */
 	public $preferSingleton = false;
 
@@ -32,7 +32,11 @@ class Resource
 	}
 
 	/**
-	 * Set the resource to prefer singleton usage
+	 * Sets the resource to prefer singleton usage
+	 *
+	 * @param boolean $prefer
+	 *
+	 * @return $this
 	 */
 	public function preferSingleton($prefer = true)
 	{
@@ -42,13 +46,14 @@ class Resource
 	}
 
 	/**
-	 * Resolve a constructor parameter
+	 * Resolves a constructor
 	 *
-	 * @param  \Fuel\Dependency\Container $container  container
-	 * @param  array                      $parameters constructor parameters
-	 * @return mixed  resolved dependency
+	 * @param Container $container
+	 * @param array     $arguments
+	 *
+	 * @return mixed
 	 */
-	public function resolve(Container $container, array $arguments = array())
+	public function resolve(Container $container, array $arguments = [])
 	{
 		if (is_callable($this->translation))
 		{
@@ -109,20 +114,25 @@ class Resource
 	}
 
 	/**
-	 * Resolve a constructor parameter
+	 * Resolves a constructor parameter
 	 *
-	 * @param   Fuel\Dependency\Container  $container  container
-	 * @param   ReflectionParameter        $parameter  parameter
-	 * @throws  Fuel\Dependency\ResolveException  when the parameter is unresolvable
-	 * @return  mixed  resolved dependency
+	 * @param Container           $container
+	 * @param ReflectionParameter $parameter
+	 *
+	 * @return mixed
+	 *
+	 * @throws ResolveException  If the parameter is unresolvable
 	 */
 	protected function resolveParameter(Container $container, ReflectionParameter $parameter)
 	{
 		if ($class = $parameter->getClass())
 		{
-			try {
+			try
+			{
 				return $container->resolve($class->name);
-			} catch (ResolveException $e) {
+			}
+			catch (ResolveException $e)
+			{
 				// Let this one pass, fall back to default value
 			}
 		}
@@ -132,7 +142,8 @@ class Resource
 			return $parameter->getDefaultValue();
 		}
 
-		if (isset($e)) {
+		if (isset($e))
+		{
 			throw $e;
 		}
 

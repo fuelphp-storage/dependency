@@ -116,18 +116,6 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	}
 
 	/**
-	 * Get a new Stack instance
-	 *
-	 * @param  string  $identifier  optional resource identifier
-	 *
-	 * @return  Stack|ObjectStack
-	 */
-	public function getStack($identifier = null)
-	{
-		return $identifier === null ? new Stack($this) : new ObjectStack($this, $identifier);
-	}
-
-	/**
 	 * Inject an instance
 	 *
 	 * @param   string  $identifier  instance identifier

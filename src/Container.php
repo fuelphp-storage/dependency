@@ -281,6 +281,9 @@ class Container implements ArrayAccess, ResourceAwareInterface
 			// Apply any supplied extensions
 			$instance = $this->applyExtensions($identifier, $instance);
 
+			// Apply any supplied extensions for multiton
+			$instance = $this->applyExtensions($instanceName, $instance);
+
 			$this->instances[$instanceName] = $instance;
 		}
 
@@ -318,6 +321,22 @@ class Container implements ArrayAccess, ResourceAwareInterface
 		$this->extends[$identifier][] = $extension;
 
 		return $this;
+	}
+
+	/**
+	 * Attaches extensions to a multiton identifier
+	 *
+	 * @param string         $identifier
+	 * @param string         $name
+	 * @param string|Closure $extension  the generic extension, or a closure implementing the extension
+	 *
+	 * @return $this
+	 */
+	public function extendMultiton($identifier, $name, $extension)
+	{
+		$identifier = $identifier.'::'.$name;
+
+		return $this->extend($identifier, $extension);
 	}
 
 	/**

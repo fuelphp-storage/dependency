@@ -108,6 +108,20 @@ trait ContainerAware
 	}
 
 	/**
+	 * Attaches extensions to a multiton identifier
+	 *
+	 * @param string         $identifier
+	 * @param string         $name
+	 * @param string|Closure $extension  the generic extension, or a closure implementing the extension
+	 *
+	 * @return $this
+	 */
+	public function extendMultiton($identifier, $name, $extension)
+	{
+		return $this->container->extendMultiton($identifier, $name, $extension);
+	}
+
+	/**
 	 * Defines a generic resource extension
 	 *
 	 * @param string  $identifier

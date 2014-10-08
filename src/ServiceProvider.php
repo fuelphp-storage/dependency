@@ -114,23 +114,6 @@ abstract class ServiceProvider implements ResourceAwareInterface
 	}
 
 	/**
-	 * Convert a resource instance to a Singleton Resource
-	 *
-	 * @param   mixed      $instance  resource instance
-	 *
-	 * @return  Singleton  singleton resource
-	 */
-	public function singleton($instance)
-	{
-		if ($instance instanceof Resource)
-		{
-			$instance = $instance->translation;
-		}
-
-		return new Singleton($instance);
-	}
-
-	/**
 	 * {@inheritdoc}
 	 */
 	public function inject($identifier, $instance)

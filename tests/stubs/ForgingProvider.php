@@ -9,11 +9,14 @@ class ForgingProvider extends ServiceProvider
 
 	public function provide() {}
 
-	public function forge($name, array $arguments = array())
+	public function forge($name, array $arguments = [])
 	{
 		if ( ! empty($arguments))
 		{
-			return $this->singleton(new Resource('stdClass'));
+			$resource = new Resource('stdClass');
+			$resource->preferSingleton();
+
+			return $resource;
 		}
 
 		return 'stdClass';

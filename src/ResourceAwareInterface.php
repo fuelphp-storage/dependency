@@ -13,57 +13,63 @@ namespace Fuel\Dependency;
 interface ResourceAwareInterface
 {
 	/**
-	 * Register a resource
+	 * Registers a resource
 	 *
-	 * @param   string  $identier  resource identifier
-	 * @param   mixed   $resource  resource
-	 * @return  $this
+	 * @param string $identifier
+	 * @param mixed  $resource
+	 *
+	 * @return $this
 	 */
-	public function register($identier, $resource);
+	public function register($identifier, $resource);
 
 	/**
-	 * Register a singleton resource
+	 * Registers a singleton resource
 	 *
-	 * @param   string  $identier  resource identifier
-	 * @param   mixed   $resource  resource
-	 * @return  $this
+	 * @param string $identifier
+	 * @param mixed  $resource
+	 *
+	 * @return $this
 	 */
-	public function registerSingleton($identier, $resource);
+	public function registerSingleton($identifier, $resource);
 
 	/**
-	 * Inject an instance
+	 * Injects an instance
 	 *
-	 * @param   string  $identier  instance identifier
-	 * @param   mixed   $instance  instance
-	 * @return  $this
+	 * @param string $identifier
+	 * @param mixed  $instance
+	 *
+	 * @return $this
 	 */
-	public function inject($identier, $instance);
+	public function inject($identifier, $instance);
 
 	/**
-	 * Resolve an instance from a resource
+	 * Resolves an instance from a resource
 	 *
-	 * @param   string  $identier   resource identifier
-	 * @param   array   $arguments  constructor arguments
-	 * @return  mixed   resource instance
+	 * @param string $identifier
+	 * @param array  $arguments
+	 *
+	 * @return mixed
 	 */
-	public function resolve($identifier, array $arguments = array());
+	public function resolve($identifier, array $arguments = []);
 
 	/**
-	 * Create a new instance from a resource
+	 * Creates a new instance from a resource
 	 *
-	 * @param   string  $identier   resource identifier
-	 * @param   array   $arguments  constructor arguments
-	 * @return  mixed   new resource instance
+	 * @param string $identifier
+	 * @param array  $arguments
+	 *
+	 * @return mixed
 	 */
-	public function forge($identifier, array $arguments = array());
+	public function forge($identifier, array $arguments = []);
 
 	/**
-	 * Resolve a named instance from a resource
+	 * Resolves a named instance from a resource
 	 *
-	 * @param   string  $identier   resource identifier
-	 * @param   string  $name       instance name
-	 * @param   array   $arguments  constructor arguments
-	 * @return  mixed   resource instance
+	 * @param string $identifier
+	 * @param string $name
+	 * @param array  $arguments
+	 *
+	 * @return mixed
 	 */
-	public function multiton($identifier, $name = '__default__', array $arguments = array());
+	public function multiton($identifier, $name = '__default__', array $arguments = []);
 }

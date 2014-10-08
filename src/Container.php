@@ -45,12 +45,7 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	protected $extensions = [];
 
 	/**
-	 * Registers a resource
-	 *
-	 * @param string $identifier
-	 * @param mixed  $resource
-	 *
-	 * @return $this
+	 * {@inheritdoc}
 	 */
 	public function register($identifier, $resource)
 	{
@@ -65,12 +60,7 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	}
 
 	/**
-	 * Registers a singleton resource
-	 *
-	 * @param string $identifier
-	 * @param mixed  $resource
-	 *
-	 * @return $this
+	 * {@inheritdoc}
 	 */
 	public function registerSingleton($identifier, $resource)
 	{
@@ -124,12 +114,7 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	}
 
 	/**
-	 * Injects an instance
-	 *
-	 * @param string $identifier
-	 * @param mixed  $instance
-	 *
-	 * @return $this
+	 * {@inheritdoc}
 	 */
 	public function inject($identifier, $instance)
 	{
@@ -221,12 +206,7 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	}
 
 	/**
-	 * Resolves an instance from a resource
-	 *
-	 * @param string $identifier
-	 * @param array  $arguments
-	 *
-	 * @return mixed
+	 * {@inheritdoc}
 	 */
 	public function resolve($identifier, array $arguments = [])
 	{
@@ -257,12 +237,7 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	}
 
 	/**
-	 * Create a new instance from a resource
-	 *
-	 * @param string $identifier
-	 * @param array  $arguments
-	 *
-	 * @return mixed
+	 * {@inheritdoc}
 	 */
 	public function forge($identifier, array $arguments = [])
 	{
@@ -274,13 +249,7 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	}
 
 	/**
-	 * Resolves a named instance from a resource
-	 *
-	 * @param string $identifier
-	 * @param string $name
-	 * @param array  $arguments
-	 *
-	 * @return mixed
+	 * {@inheritdoc}
 	 */
 	public function multiton($identifier, $name = '__default__', array $arguments = [])
 	{

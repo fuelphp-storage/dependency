@@ -63,9 +63,6 @@ class Resource
 			// calling the method directly is faster then call_user_func_array() !
 			switch (count($arguments))
 			{
-				case 0:
-					return $callback();
-
 				case 1:
 					return $callback($arguments[0]);
 

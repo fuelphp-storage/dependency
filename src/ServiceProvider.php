@@ -15,26 +15,28 @@ use Closure;
 abstract class ServiceProvider implements ResourceAwareInterface
 {
 	/**
-	 * @var  string  $namespace  provider namespace
+	 * @var string $namespace
 	 */
 	public $namespace;
 
 	/**
-	 * @var  Container  $container
+	 * @var Container $container
 	 */
 	protected $container;
 
 	/**
-	 * @var  array Provides list of identifiers
+	 * Provides list of identifiers
+	 *
+	 * @var array|boolean
 	 */
 	public $provides;
 
 	/**
-	 * Container injection
+	 * Sets the container
 	 *
-	 * @param   Container  $container  container
+	 * @param Container $container
 	 *
-	 * @return  $this
+	 * @return $this
 	 */
 	public function setContainer(Container $container)
 	{
@@ -44,11 +46,11 @@ abstract class ServiceProvider implements ResourceAwareInterface
 	}
 
 	/**
-	 * Check weather the the identifier is handles by the service provider
+	 * Checks weather the the identifier is handles by the service provider
 	 *
-	 * @param   string   $identifier
+	 * @param string $identifier
 	 *
-	 * @return  boolean  weather the identifier is handled by the provider
+	 * @return boolean
 	 */
 	public function handles($identifier)
 	{
@@ -60,7 +62,15 @@ abstract class ServiceProvider implements ResourceAwareInterface
 		return (strpos($identifier, $this->namespace) === 0);
 	}
 
-	public function handle($identifier, $arguments)
+	/**
+	 * Handles creating a new instance
+	 *
+	 * @param string $identifier
+	 * @param array $arguments
+	 *
+	 * @return mixed
+	 */
+	public function handle($identifier, array $arguments)
 	{
 		$name = substr($identifier, strlen($this->namespace)+1);
 
@@ -68,12 +78,7 @@ abstract class ServiceProvider implements ResourceAwareInterface
 	}
 
 	/**
-	 * Register a resource
-	 *
-	 * @param string $identifier resource identifier
-	 * @param mixed  $resource   resource
-	 *
-	 * @return $this
+	 * {@inheritdoc}
 	 */
 	public function register($identifier, $resource)
 	{
@@ -83,12 +88,7 @@ abstract class ServiceProvider implements ResourceAwareInterface
 	}
 
 	/**
-	 * Register a singleton resource
-	 *
-	 * @param   string  $identifier  resource identifier
-	 * @param   mixed   $resource    resource
-	 *
-	 * @return  $this
+	 * {@inheritdoc}
 	 */
 	public function registerSingleton($identifier, $resource)
 	{
@@ -98,28 +98,17 @@ abstract class ServiceProvider implements ResourceAwareInterface
 	}
 
 	/**
-	 * Resolve an instance from a resource
-	 *
-	 * @param   string  $identifier   resource identifier
-	 * @param   array   $arguments    constructor arguments
-	 *
-	 * @return  mixed   resource instance
+	 * {@inheritdoc}
 	 */
-	public function resolve($identifier, array $arguments = array())
+	public function resolve($identifier, array $arguments = [])
 	{
 		return $this->container->resolve($identifier, $arguments);
 	}
 
 	/**
-	 * Resolve a named instance from a resource
-	 *
-	 * @param   string  $identifier   resource identifier
-	 * @param   string  $name         instance name
-	 * @param   array   $arguments    constructor arguments
-	 *
-	 * @return  mixed   resource instance
+	 * {@inheritdoc}
 	 */
-	public function multiton($identifier, $name = '__default__', array $arguments = array())
+	public function multiton($identifier, $name = '__default__', array $arguments = [])
 	{
 		return $this->container->multiton($identifier, $name, $arguments);
 	}
@@ -142,12 +131,7 @@ abstract class ServiceProvider implements ResourceAwareInterface
 	}
 
 	/**
-	 * Inject an instance
-	 *
-	 * @param   string  $identifier  instance identifier
-	 * @param   mixed   $instance    instance
-	 *
-	 * @return  $this
+	 * {@inheritdoc}
 	 */
 	public function inject($identifier, $instance)
 	{
@@ -157,44 +141,39 @@ abstract class ServiceProvider implements ResourceAwareInterface
 	}
 
 	/**
-	 * Create a new instance from a resource
-	 *
-	 * @param   string  $identifier   resource identifier
-	 * @param   array   $arguments    constructor arguments
-	 *
-	 * @return  mixed   new resource instance
+	 * {@inheritdoc}
 	 */
-	public function forge($identifier, array $arguments = array())
+	public function forge($identifier, array $arguments = [])
 	{
 		return $this->container->forge($identifier, $arguments);
 	}
 
 	/**
-	 * Define a generic resource extension
+	 * Attaches extensions to an identifier
 	 *
-	 * @param  string   $identifier  the extension identifier
-	 * @param  Closure  $extension   the closure implementing the extension
-	 *
-	 * @return  $this
-	 */
-	public function extension($identifier, Closure $extension)
-	{
-		$this->container->extension($identifier, $extension);
-
-		return $this;
-	}
-
-	/**
-	 * Attach extensions to an identifier
-	 *
-	 * @param  string          $identifier  the resource identifier to extend
-	 * @param  string|Closure  $extension   the generic extension, or a closure implementing the extension
+	 * @param string         $identifier
+	 * @param string|Closure $extension  the generic extension, or a closure implementing the extension
 	 *
 	 * @return $this
 	 */
 	public function extend($identifier, $extension)
 	{
 		$this->container->extend($identifier, $extension);
+
+		return $this;
+	}
+
+	/**
+	 * Defines a generic resource extension
+	 *
+	 * @param string  $identifier
+	 * @param Closure $extension
+	 *
+	 * @return $this
+	 */
+	public function extension($identifier, Closure $extension)
+	{
+		$this->container->extension($identifier, $extension);
 
 		return $this;
 	}

@@ -56,7 +56,7 @@ class Container implements ArrayAccess, ResourceAwareInterface
 
 		$this->resources[$identifier] = $resource;
 
-		return $resource;
+		return $this;
 	}
 
 	/**
@@ -64,10 +64,11 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	 */
 	public function registerSingleton($identifier, $resource)
 	{
-		$resource = $this->register($identifier, $resource);
-		$resource->preferSingleton(true);
+		$this->register($identifier, $resource);
 
-		return $resource;
+		$this->resources[$identifier]->preferSingleton(true);
+
+		return $this;
 	}
 
 	/**
@@ -266,8 +267,8 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	/**
 	 * Attaches extensions to an identifier
 	 *
-	 * @param string          $identifier
-	 * @param string|Closure  $extension  the generic extension, or a closure implementing the extension
+	 * @param string         $identifier
+	 * @param string|Closure $extension  the generic extension, or a closure implementing the extension
 	 *
 	 * @return $this
 	 */

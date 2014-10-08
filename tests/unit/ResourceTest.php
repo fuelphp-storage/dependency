@@ -31,6 +31,7 @@ class ResourceTest extends Test
 	{
 		// TODO: use mockery
 		$container = new Container;
+		$context = new ResolveContext($container);
 
 		$resource = new Resource(function($dic) {
 			return new stdClass;
@@ -38,7 +39,7 @@ class ResourceTest extends Test
 
 		$arguments = func_get_args();
 
-		$instance = $resource->resolve($container, $arguments);
+		$instance = $resource->resolve($context, $arguments);
 
 		$this->assertInstanceOf('stdClass', $instance);
 	}
@@ -59,10 +60,11 @@ class ResourceTest extends Test
 	{
 		// TODO: use mockery
 		$container = new Container;
+		$context = new ResolveContext($container);
 
 		$resource = new Resource('stdClass');
 
-		$instance = $resource->resolve($container);
+		$instance = $resource->resolve($context);
 
 		$this->assertInstanceOf('stdClass', $instance);
 	}
@@ -71,10 +73,11 @@ class ResourceTest extends Test
 	{
 		// TODO: use mockery
 		$container = new Container;
+		$context = new ResolveContext($container);
 
 		$resource = new Resource('Depending');
 
-		$instance = $resource->resolve($container);
+		$instance = $resource->resolve($context);
 
 		$this->assertInstanceOf('Depending', $instance);
 		$this->assertInstanceOf('DependedOn', $instance->dep);
@@ -87,10 +90,11 @@ class ResourceTest extends Test
 	{
 		// TODO: use mockery
 		$container = new Container;
+		$context = new ResolveContext($container);
 
 		$resource = new Resource('ConstructorFail');
 
-		$resource->resolve($container);
+		$resource->resolve($context);
 	}
 
 	/**
@@ -100,20 +104,22 @@ class ResourceTest extends Test
 	{
 		// TODO: use mockery
 		$container = new Container;
+		$context = new ResolveContext($container);
 
 		$resource = new Resource('ConstructorFailNoClass');
 
-		$resource->resolve($container);
+		$resource->resolve($context);
 	}
 
 	public function testConstructorDefault()
 	{
 		// TODO: use mockery
 		$container = new Container;
+		$context = new ResolveContext($container);
 
 		$resource = new Resource('ConstructorDefault');
 
-		$instance = $resource->resolve($container);
+		$instance = $resource->resolve($context);
 
 		$this->assertNull($instance->dep);
 	}

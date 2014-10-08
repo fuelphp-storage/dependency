@@ -48,17 +48,17 @@ class Resource
 	/**
 	 * Resolves a constructor
 	 *
-	 * @param Container $container
-	 * @param array     $arguments
+	 * @param ResolveContext $context
+	 * @param array          $arguments
 	 *
 	 * @return mixed
 	 */
-	public function resolve(Container $container, array $arguments = [])
+	public function resolve(ResolveContext $context, array $arguments = [])
 	{
 		if (is_callable($this->translation))
 		{
 			$callback = $this->translation;
-			array_unshift($arguments, $container);
+			array_unshift($arguments, $context);
 
 			// calling the method directly is faster then call_user_func_array() !
 			switch (count($arguments))
@@ -103,7 +103,7 @@ class Resource
 		// Resolve the remaining parameters
 		foreach ($parameters as $parameter)
 		{
-			$arguments[] = $this->resolveParameter($container, $parameter);
+			$arguments[] = $this->resolveParameter($context, $parameter);
 		}
 
 		// return a new instance with arguments.
@@ -113,20 +113,20 @@ class Resource
 	/**
 	 * Resolves a constructor parameter
 	 *
-	 * @param Container           $container
+	 * @param ResolveContext      $context
 	 * @param ReflectionParameter $parameter
 	 *
 	 * @return mixed
 	 *
 	 * @throws ResolveException  If the parameter is unresolvable
 	 */
-	protected function resolveParameter(Container $container, ReflectionParameter $parameter)
+	protected function resolveParameter(ResolveContext $context, ReflectionParameter $parameter)
 	{
 		if ($class = $parameter->getClass())
 		{
 			try
 			{
-				return $container->resolve($class->name);
+				return $context->resolve($class->name);
 			}
 			catch (ResolveException $e)
 			{

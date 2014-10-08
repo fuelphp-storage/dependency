@@ -221,8 +221,11 @@ class Container implements ArrayAccess, ResourceAwareInterface
 		// Find the resource
 		$resource = $this->find($identifier, $arguments);
 
+		// Get the context
+		$context = $this->getContext();
+
 		// Resolve an instance
-		$instance = $resource->resolve($this, $arguments);
+		$instance = $resource->resolve($context, $arguments);
 
 		// Apply any supplied extensions
 		$instance = $this->applyExtensions($identifier, $instance);
@@ -245,8 +248,11 @@ class Container implements ArrayAccess, ResourceAwareInterface
 		// Find the resource
 		$resource = $this->find($identifier, $arguments);
 
+		// Get the context
+		$context = $this->getContext();
+
 		// Resolve an instance
-		$instance = $resource->resolve($this, $arguments);
+		$instance = $resource->resolve($context, $arguments);
 
 		// Apply any supplied extensions
 		$instance = $this->applyExtensions($identifier, $instance);
@@ -259,14 +265,39 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	 */
 	public function multiton($identifier, $name = '__default__', array $arguments = [])
 	{
-		$name = $identifier.'::'.$name;
+		$instanceName = $identifier.'::'.$name;
 
-		if ( ! isset($this->instances[$name]))
+		if ( ! isset($this->instances[$instanceName]))
 		{
-			$this->instances[$name] = $this->forge($identifier, $arguments);
+			// Find the resource
+			$resource = $this->find($identifier, $arguments);
+
+			// Get the context
+			$context = $this->getContext($name, true);
+
+			// Resolve an instance
+			$instance = $resource->resolve($context, $arguments);
+
+			// Apply any supplied extensions
+			$instance = $this->applyExtensions($identifier, $instance);
+
+			$this->instances[$instanceName] = $instance;
 		}
 
-		return $this->instances[$name];
+		return $this->instances[$instanceName];
+	}
+
+	/**
+	 * Creates a new context
+	 *
+	 * @param string  $name
+	 * @param boolean $multiton
+	 *
+	 * @return ResolveContext
+	 */
+	public function getContext($name = null, $multiton = false)
+	{
+		return new ResolveContext($this, $name, $multiton);
 	}
 
 	/**

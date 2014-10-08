@@ -53,7 +53,7 @@ interface ResourceAwareInterface
 	public function resolve($identifier, array $arguments = []);
 
 	/**
-	 * Create a new instance from a resource
+	 * Creates a new instance from a resource
 	 *
 	 * @param string $identifier
 	 * @param array  $arguments

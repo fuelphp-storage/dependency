@@ -1,4 +1,12 @@
 <?php
+/**
+ * @package    Fuel\Dependency
+ * @version    2.0
+ * @author     Fuel Development Team
+ * @license    MIT License
+ * @copyright  2010 - 2014 Fuel Development Team
+ * @link       http://fuelphp.com
+ */
 
 namespace Fuel\Dependency;
 
@@ -123,39 +131,6 @@ class ContainerTest extends Test
 		$this->assertTrue(isset($container['stuff']));
 		unset($container['stuff']);
 		$this->assertFalse(isset($container['stuff']));
-	}
-
-	public function testConstructorDependencies()
-	{
-		$container = new Container();
-		$result = $container['Depending'];
-		$this->assertInstanceOf('Depending', $result);
-		$this->assertInstanceOf('DependedOn', $result->dep);
-	}
-
-	/**
-	 * @expectedException \Fuel\Dependency\ResolveException
-	 */
-	public function testConstructorClassFail()
-	{
-		$container = new Container();
-		$container['ConstructorFail'];
-	}
-
-	/**
-	 * @expectedException \Fuel\Dependency\ResolveException
-	 */
-	public function testConstructorNoClassFail()
-	{
-		$container = new Container();
-		$container['ConstructorFailNoClass'];
-	}
-
-	public function testConstructorDefault()
-	{
-		$container = new Container();
-		$result = $container['ConstructorDefault'];
-		$this->assertNull($result->dep);
 	}
 
 	public function testExtends()

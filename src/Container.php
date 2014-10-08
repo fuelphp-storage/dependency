@@ -218,8 +218,14 @@ class Container implements ArrayAccess, ResourceAwareInterface
 			return $instance;
 		}
 
-		// Forge an instance
-		$instance = $this->forge($identifier, $arguments);
+		// Find the resource
+		$resource = $this->find($identifier, $arguments);
+
+		// Resolve an instance
+		$instance = $resource->resolve($this, $arguments);
+
+		// Apply any supplied extensions
+		$instance = $this->applyExtensions($identifier, $instance);
 
 		// When the resource prefers to be Singleton
 		if ($resource->preferSingleton)

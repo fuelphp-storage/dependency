@@ -9,7 +9,7 @@ class ForgingProvider extends ServiceProvider
 
 	public function provide() {}
 
-	public function factory($name, array $arguments = array())
+	public function forge($name, array $arguments = array())
 	{
 		if ( ! empty($arguments))
 		{

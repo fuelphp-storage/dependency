@@ -56,7 +56,7 @@ class ContainerTest extends Test
 		$container = new Container();
 		$container->registerService(new \ForgingProvider());
 		$this->assertInstanceOf('stdClass', $container['forging.name']);
-		$this->assertInstanceOf('stdClass', $container->forge('forging.name', array(true)));
+		$this->assertInstanceOf('stdClass', $container->forge('forging.name',  [true]));
 	}
 
 	public function testRegisteringService()
@@ -80,7 +80,7 @@ class ContainerTest extends Test
 	public function testInjectingService()
 	{
 		$container = new Container();
-		$container->registerServices(array(new \InjectingService()));
+		$container->registerServices([new \InjectingService()]);
 		$this->assertInstanceOf('Fuel\Dependency\ServiceProvider', $container['service']);
 	}
 

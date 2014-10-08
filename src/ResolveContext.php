@@ -13,7 +13,7 @@ namespace Fuel\Dependency;
 /**
  * Creates a context for each resolve
  */
-class ResolveContext
+class ResolveContext implements ResourceAwareInterface
 {
 	use ContainerAware;
 

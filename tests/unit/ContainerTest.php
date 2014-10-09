@@ -65,6 +65,7 @@ class ContainerTest extends Test
 		$container->registerService(new \RegisteringService());
 		$this->assertInstanceOf('stdClass', $container['from.service']);
 		$this->assertEquals('This Works!', $container['from.service']->forge->extension);
+		$this->assertEquals('This Works!', $container['from.service']->resolveSingleton->extension);
 	}
 
 	public function testExtensionService()
@@ -149,6 +150,32 @@ class ContainerTest extends Test
 		});
 
 		$instance = $container['id'];
+
+		$this->assertEquals('Frank', $instance->name);
+		$this->assertEquals('de Jonge', $instance->surname);
+	}
+
+	public function testExtendsMultiton()
+	{
+		$container = new Container;
+		$container->register('id', 'stdClass');
+
+		$container->extend('id', function($container, $instance) {
+			$instance->name = 'Frank';
+		});
+
+		$container->extendMultiton('id', 'fullname', function($container, $instance) {
+			$instance->surname = 'de Jonge';
+
+			return $instance;
+		});
+
+		$instance = $container['id'];
+
+		$this->assertEquals('Frank', $instance->name);
+		$this->assertObjectNotHasAttribute('surname', $instance);
+
+		$instance = $container->multiton('id', 'fullname');
 
 		$this->assertEquals('Frank', $instance->name);
 		$this->assertEquals('de Jonge', $instance->surname);

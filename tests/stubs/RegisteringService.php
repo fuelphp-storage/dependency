@@ -11,6 +11,7 @@ class RegisteringService extends ServiceProvider
 		$this->registerSingleton('forge', function($container) {
 			return (object) compact('container', 'arguments');
 		});
+
 		$this->extend('forge', function($container, $instance)
 		{
 			$instance->extension = 'This Works!';
@@ -26,6 +27,11 @@ class RegisteringService extends ServiceProvider
 
 		$this->registerSingleton('resolveSingleton', function($container) {
 			return (object) compact('container', 'arguments');
+		});
+
+		$this->extendMultiton('resolveSingleton', '__default__', function($container, $instance)
+		{
+			$instance->extension = 'This Works!';
 		});
 
 		$resolveSingleton = $this->multiton('resolveSingleton');

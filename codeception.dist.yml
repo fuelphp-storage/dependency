@@ -9,5 +9,6 @@ settings:
     colors: false
     memory_limit: 1024M
 coverage:
+    enabled: true
     include:
         - src/*

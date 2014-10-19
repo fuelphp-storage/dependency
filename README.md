@@ -24,7 +24,7 @@ The container is the primary component of the dependency package and ties all th
 
 Create a new `Container`
 
-```
+``` php
 $container = new Fuel\Dependency\Container;
 ```
 
@@ -34,7 +34,7 @@ A resource is either a class string name or a closure which returns an instance 
 
 #### String resource:
 
-```
+``` php
 // Register
 $container->register('string', 'stdClass');
 
@@ -44,7 +44,7 @@ $instance = $container->resolve('string');
 
 #### Closure resource:
 
-```
+``` php
 // Register
 $container->register('closure.object', function() {
 	return new stdClass;
@@ -58,7 +58,7 @@ $instance = $container->resolve('closure.object');
 
 Using extensions is a great way to inject additional resources into instances:
 
-```
+``` php
 $container->register('extendable', 'stdClass');
 
 $container->extend('extendable', function($container, $instance)
@@ -73,7 +73,7 @@ $instance->extended;
 
 If you have extensions you want to apply to multiple resources, you can also define generic extensions:
 
-```
+``` php
 $container->register('extendable', 'stdClass');
 
 $container->extension('isExtended', function($container, $instance)
@@ -97,8 +97,6 @@ At this moment the current implementation is slightly flawed in that the class t
 an actual class, meaning that other classes cannot be aliased and injected.
 
 ```php
-<?php
-
 class Hello
 {
 	public function speak()
@@ -126,7 +124,6 @@ $container = new Fuel\Dependency\Container;
 $container->register('Hello', 'Hello');
 $container->register('Main', 'Main');
 $container->resolve('Main')->talk();
-
 ```
 
 ## Service Providers
@@ -135,8 +132,7 @@ Service providers are used to expose packages to the Container. A Service
 Provider can provide the container with resources but also act on a namespace.
 A namespace is a string prefix which maps identifiers to the providers factory method.
 
-```
-<?php
+``` php
 use Fuel\Dependency\ServiceProvider;
 
 class MyProvider extends ServiceProvider

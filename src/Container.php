@@ -145,11 +145,10 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	 * Finds a resource identified by the identifier passed
 	 *
 	 * @param string $identifier
-	 * @param array  $arguments
 	 *
 	 * @return mixed The found resource, or null if not found
 	 */
-	protected function findResource($identifier, $arguments)
+	protected function findResource($identifier)
 	{
 		if (isset($this->resources[$identifier]))
 		{
@@ -164,12 +163,7 @@ class Container implements ArrayAccess, ResourceAwareInterface
 				$service->provide();
 				$service->provides = false;
 
-				return $this->findResource($identifier, $arguments);
-			}
-
-			if ($service->handles($identifier) and $resource = $service->handle($identifier, $arguments))
-			{
-				return $resource;
+				return $this->findResource($identifier);
 			}
 		}
 
@@ -185,15 +179,14 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	 * Finds and returns a new instance of a resource
 	 *
 	 * @param string $identifier
-	 * @param array  $arguments
 	 *
 	 * @return mixed The found resource, or null if not found
 	 *
 	 * @throws ResolveException If the identifier can not be resolved
 	 */
-	public function find($identifier, $arguments)
+	public function find($identifier)
 	{
-		if ( ! $resource = $this->findResource($identifier, $arguments))
+		if ( ! $resource = $this->findResource($identifier))
 		{
 			throw new ResolveException('Could not resolve: '.$identifier);
 		}
@@ -219,7 +212,7 @@ class Container implements ArrayAccess, ResourceAwareInterface
 		}
 
 		// Find the resource
-		$resource = $this->find($identifier, $arguments);
+		$resource = $this->find($identifier);
 
 		// Get the context
 		$context = $this->getContext();
@@ -246,7 +239,7 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	public function forge($identifier, array $arguments = [])
 	{
 		// Find the resource
-		$resource = $this->find($identifier, $arguments);
+		$resource = $this->find($identifier);
 
 		// Get the context
 		$context = $this->getContext();
@@ -270,7 +263,7 @@ class Container implements ArrayAccess, ResourceAwareInterface
 		if ( ! isset($this->instances[$instanceName]))
 		{
 			// Find the resource
-			$resource = $this->find($identifier, $arguments);
+			$resource = $this->find($identifier);
 
 			// Get the context
 			$context = $this->getContext($name, true);
@@ -419,7 +412,7 @@ class Container implements ArrayAccess, ResourceAwareInterface
 
 	public function offsetExists($offset)
 	{
-		if ($this->getInstance($offset) or $this->findResource($offset, []))
+		if ($this->getInstance($offset) or $this->findResource($offset))
 		{
 			return true;
 		}

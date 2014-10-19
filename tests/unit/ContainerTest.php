@@ -51,14 +51,6 @@ class ContainerTest extends Test
 		$container->isInstance('unknown','dependency');
 	}
 
-	public function testForgingProvider()
-	{
-		$container = new Container();
-		$container->registerService(new \ForgingProvider());
-		$this->assertInstanceOf('stdClass', $container['forging.name']);
-		$this->assertInstanceOf('stdClass', $container->forge('forging.name',  [true]));
-	}
-
 	public function testRegisteringService()
 	{
 		$container = new Container();
@@ -111,14 +103,6 @@ class ContainerTest extends Test
 	{
 		$container = new Container;
 		$this->assertInstanceOf('stdClass', $container['stdClass']);
-	}
-
-	public function testClassIdentifierForge()
-	{
-		$container = new Container;
-		$container->registerService(new \InjectingService);
-		$container->registerService(new \ForgingProvider);
-		$this->assertInstanceOf('stdClass', $container->forge('forging.name'));
 	}
 
 	public function testOffsetExists()

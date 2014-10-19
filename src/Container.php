@@ -197,20 +197,15 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	 *
 	 * @param string $identifier
 	 *
-	 * @return mixed The found resource, or null if not found
+	 * @return Resource The found resource
 	 *
-	 * @throws ResolveException If the identifier can not be resolved
+	 * @throws ResolveException If the resource cannot be found
 	 */
 	public function find($identifier)
 	{
 		if ( ! $resource = $this->findResource($identifier))
 		{
-			throw new ResolveException('Could not resolve: '.$identifier);
-		}
-
-		if ( ! $resource instanceof Resource)
-		{
-			$resource = new Resource($resource);
+			throw new ResolveException('Could not find resource: '.$identifier);
 		}
 
 		return $resource;

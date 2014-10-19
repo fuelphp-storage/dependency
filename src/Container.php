@@ -272,27 +272,29 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	{
 		$instanceName = $identifier.'::'.$name;
 
-		if ( ! isset($this->instances[$instanceName]))
+		// If we find a previously resolved instance
+		if ($instance = $this->getInstance($instanceName))
 		{
-			// Find the resource
-			$resource = $this->find($identifier);
-
-			// Get the context
-			$context = $this->getContext($name, true);
-
-			// Resolve an instance
-			$instance = $resource->resolve($context, $arguments);
-
-			// Apply any supplied extensions
-			$instance = $this->applyExtensions($identifier, $instance);
-
-			// Apply any supplied extensions for multiton
-			$instance = $this->applyExtensions($instanceName, $instance);
-
-			$this->instances[$instanceName] = $instance;
+			// Return it
+			return $instance;
 		}
 
-		return $this->instances[$instanceName];
+		// Find the resource
+		$resource = $this->find($identifier);
+
+		// Get the context
+		$context = $this->getContext($name, true);
+
+		// Resolve an instance
+		$instance = $resource->resolve($context, $arguments);
+
+		// Apply any supplied extensions
+		$instance = $this->applyExtensions($identifier, $instance);
+
+		// Apply any supplied extensions for multiton
+		$instance = $this->applyExtensions($instanceName, $instance);
+
+		return $this->instances[$instanceName] = $instance;
 	}
 
 	/**

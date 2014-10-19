@@ -166,11 +166,6 @@ class Container implements ArrayAccess, ResourceAwareInterface
 
 				return $this->findResource($identifier, $arguments);
 			}
-
-			if ($service->handles($identifier) and $resource = $service->handle($identifier, $arguments))
-			{
-				return $resource;
-			}
 		}
 
 		if (class_exists($identifier, true))

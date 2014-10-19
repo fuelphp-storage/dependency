@@ -320,11 +320,6 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	 */
 	public function extend($identifier, $extension)
 	{
-		if ( ! isset($this->extends[$identifier]))
-		{
-			$this->extends[$identifier] = [];
-		}
-
 		$this->extends[$identifier][] = $extension;
 
 		return $this;

@@ -26,7 +26,7 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	protected $instances = [];
 
 	/**
-	 * @var ServiceProvider[]  $services
+	 * @var ServiceProvider[] $services
 	 */
 	protected $services = [];
 
@@ -142,17 +142,39 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	}
 
 	/**
-	 * Finds a resource identified by the identifier passed
+	 * Tries to get the resource from the currently loaded resources
 	 *
 	 * @param string $identifier
 	 *
-	 * @return mixed The found resource, or null if not found
+	 * @return Resource|null The found resource, or null if not found
 	 */
-	protected function findResource($identifier)
+	protected function getResource($identifier)
 	{
 		if (isset($this->resources[$identifier]))
 		{
 			return $this->resources[$identifier];
+		}
+
+		if (class_exists($identifier, true))
+		{
+			return $this->resources[$identifier] = new Resource($identifier);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Finds a resource identified by the identifier passed
+	 *
+	 * @param string $identifier
+	 *
+	 * @return Resource|null The found resource, or null if not found
+	 */
+	protected function findResource($identifier)
+	{
+		if ($resource = $this->getResource($identifier))
+		{
+			return $resource;
 		}
 
 		foreach ($this->services as $service)
@@ -163,13 +185,8 @@ class Container implements ArrayAccess, ResourceAwareInterface
 				$service->provide();
 				$service->provides = false;
 
-				return $this->findResource($identifier);
+				return $this->getResource($identifier);
 			}
-		}
-
-		if (class_exists($identifier, true))
-		{
-			return $this->resources[$identifier] = new Resource($identifier);
 		}
 
 		return null;

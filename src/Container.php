@@ -313,8 +313,8 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	/**
 	 * Attaches extensions to an identifier
 	 *
-	 * @param string         $identifier
-	 * @param string|Closure $extension  the generic extension, or a closure implementing the extension
+	 * @param string          $identifier
+	 * @param string|callable $extension  the generic extension, or a callable implementing the extension
 	 *
 	 * @return $this
 	 */
@@ -328,9 +328,9 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	/**
 	 * Attaches extensions to a multiton identifier
 	 *
-	 * @param string         $identifier
-	 * @param string         $name
-	 * @param string|Closure $extension  the generic extension, or a closure implementing the extension
+	 * @param string          $identifier
+	 * @param string          $name
+	 * @param string|callable $extension  the generic extension, or a callable implementing the extension
 	 *
 	 * @return $this
 	 */
@@ -378,7 +378,12 @@ class Container implements ArrayAccess, ResourceAwareInterface
 				$extension = $this->extensions[$extension];
 			}
 
-			if ($result = $extension($this, $instance))
+			if ( ! is_callable($extension))
+			{
+				throw new InvalidExtensionException('Extension for resource '.$identifier.' cannot be applied: not callable.');
+			}
+
+			if ($result = call_user_func($extension, $this, $instance))
 			{
 				$instance = $result;
 			}

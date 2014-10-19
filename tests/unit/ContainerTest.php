@@ -195,4 +195,17 @@ class ContainerTest extends Test
 		$this->assertEquals('Frank', $instance->name);
 		$this->assertEquals('de Jonge', $instance->surname);
 	}
+
+	/**
+	 * @expectedException \Fuel\Dependency\InvalidExtensionException
+	 */
+	public function testExtendsFailure()
+	{
+		$container = new Container;
+		$container->register('id', 'stdClass');
+
+		$container->extend('id', 'this_is_not_a_callable');
+
+		$container['id'];
+	}
 }

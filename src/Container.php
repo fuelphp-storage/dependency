@@ -412,7 +412,7 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	 *
 	 * @param string $identifier
 	 *
-	 * @return mixed|null
+	 * @return boolean
 	 */
 	public function isInstance($identifier, $name = null)
 	{

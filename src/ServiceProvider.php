@@ -10,8 +10,6 @@
 
 namespace Fuel\Dependency;
 
-use Closure;
-
 abstract class ServiceProvider implements ResourceAwareInterface
 {
 	use ContainerAware;

@@ -31,6 +31,11 @@ class ResolveContext implements ResourceAwareInterface
 	 */
 	protected $multiton = false;
 
+	/**
+	 * @param Container   $container
+	 * @param string|null $name
+	 * @param boolean     $multiton
+	 */
 	function __construct(Container $container, $name = null, $multiton = false)
 	{
 		$this->container = $container;

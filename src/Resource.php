@@ -10,7 +10,6 @@
 
 namespace Fuel\Dependency;
 
-use Closure;
 use ReflectionClass;
 use ReflectionParameter;
 

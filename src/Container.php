@@ -26,7 +26,7 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	protected $instances = [];
 
 	/**
-	 * @var ServiceProvider[]  $services
+	 * @var ServiceProvider[] $services
 	 */
 	protected $services = [];
 
@@ -142,29 +142,17 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	}
 
 	/**
-	 * Finds a resource identified by the identifier passed
+	 * Tries to get the resource from the currently loaded resources
 	 *
 	 * @param string $identifier
 	 *
-	 * @return mixed The found resource, or null if not found
+	 * @return Resource|null The found resource, or null if not found
 	 */
-	protected function findResource($identifier)
+	protected function getResource($identifier)
 	{
 		if (isset($this->resources[$identifier]))
 		{
 			return $this->resources[$identifier];
-		}
-
-		foreach ($this->services as $service)
-		{
-			/** @type ServiceProvider $service */
-			if ($service->provides and in_array($identifier, $service->provides))
-			{
-				$service->provide();
-				$service->provides = false;
-
-				return $this->findResource($identifier);
-			}
 		}
 
 		if (class_exists($identifier, true))
@@ -176,24 +164,48 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	}
 
 	/**
+	 * Finds a resource identified by the identifier passed
+	 *
+	 * @param string $identifier
+	 *
+	 * @return Resource|null The found resource, or null if not found
+	 */
+	protected function findResource($identifier)
+	{
+		if ($resource = $this->getResource($identifier))
+		{
+			return $resource;
+		}
+
+		foreach ($this->services as $service)
+		{
+			/** @type ServiceProvider $service */
+			if ($service->provides and in_array($identifier, $service->provides))
+			{
+				$service->provide();
+				$service->provides = false;
+
+				return $this->getResource($identifier);
+			}
+		}
+
+		return null;
+	}
+
+	/**
 	 * Finds and returns a new instance of a resource
 	 *
 	 * @param string $identifier
 	 *
-	 * @return mixed The found resource, or null if not found
+	 * @return Resource The found resource
 	 *
-	 * @throws ResolveException If the identifier can not be resolved
+	 * @throws ResolveException If the resource cannot be found
 	 */
 	public function find($identifier)
 	{
 		if ( ! $resource = $this->findResource($identifier))
 		{
-			throw new ResolveException('Could not resolve: '.$identifier);
-		}
-
-		if ( ! $resource instanceof Resource)
-		{
-			$resource = new Resource($resource);
+			throw new ResolveException('Could not find resource: '.$identifier);
 		}
 
 		return $resource;
@@ -260,27 +272,29 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	{
 		$instanceName = $identifier.'::'.$name;
 
-		if ( ! isset($this->instances[$instanceName]))
+		// If we find a previously resolved instance
+		if ($instance = $this->getInstance($instanceName))
 		{
-			// Find the resource
-			$resource = $this->find($identifier);
-
-			// Get the context
-			$context = $this->getContext($name, true);
-
-			// Resolve an instance
-			$instance = $resource->resolve($context, $arguments);
-
-			// Apply any supplied extensions
-			$instance = $this->applyExtensions($identifier, $instance);
-
-			// Apply any supplied extensions for multiton
-			$instance = $this->applyExtensions($instanceName, $instance);
-
-			$this->instances[$instanceName] = $instance;
+			// Return it
+			return $instance;
 		}
 
-		return $this->instances[$instanceName];
+		// Find the resource
+		$resource = $this->find($identifier);
+
+		// Get the context
+		$context = $this->getContext($name, true);
+
+		// Resolve an instance
+		$instance = $resource->resolve($context, $arguments);
+
+		// Apply any supplied extensions
+		$instance = $this->applyExtensions($identifier, $instance);
+
+		// Apply any supplied extensions for multiton
+		$instance = $this->applyExtensions($instanceName, $instance);
+
+		return $this->instances[$instanceName] = $instance;
 	}
 
 	/**
@@ -299,18 +313,13 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	/**
 	 * Attaches extensions to an identifier
 	 *
-	 * @param string         $identifier
-	 * @param string|Closure $extension  the generic extension, or a closure implementing the extension
+	 * @param string          $identifier
+	 * @param string|callable $extension  the generic extension, or a callable implementing the extension
 	 *
 	 * @return $this
 	 */
 	public function extend($identifier, $extension)
 	{
-		if ( ! isset($this->extends[$identifier]))
-		{
-			$this->extends[$identifier] = [];
-		}
-
 		$this->extends[$identifier][] = $extension;
 
 		return $this;
@@ -319,9 +328,9 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	/**
 	 * Attaches extensions to a multiton identifier
 	 *
-	 * @param string         $identifier
-	 * @param string         $name
-	 * @param string|Closure $extension  the generic extension, or a closure implementing the extension
+	 * @param string          $identifier
+	 * @param string          $name
+	 * @param string|callable $extension  the generic extension, or a callable implementing the extension
 	 *
 	 * @return $this
 	 */
@@ -369,7 +378,12 @@ class Container implements ArrayAccess, ResourceAwareInterface
 				$extension = $this->extensions[$extension];
 			}
 
-			if ($result = $extension($this, $instance))
+			if ( ! is_callable($extension))
+			{
+				throw new InvalidExtensionException('Extension for resource '.$identifier.' cannot be applied: not callable.');
+			}
+
+			if ($result = call_user_func($extension, $this, $instance))
 			{
 				$instance = $result;
 			}
@@ -398,7 +412,7 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	 *
 	 * @param string $identifier
 	 *
-	 * @return mixed|null
+	 * @return boolean
 	 */
 	public function isInstance($identifier, $name = null)
 	{

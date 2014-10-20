@@ -10,14 +10,4 @@
 
 namespace Fuel\Dependency;
 
-abstract class ServiceProvider implements ResourceAwareInterface
-{
-	use ContainerAware;
-
-	/**
-	 * Provides list of identifiers
-	 *
-	 * @var array|boolean
-	 */
-	public $provides;
-}
+class InvalidExtensionException extends \Exception {}

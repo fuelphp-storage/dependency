@@ -172,9 +172,9 @@ class Container implements ArrayAccess, ResourceAwareInterface
 	 */
 	protected function findResource($identifier)
 	{
-		if ($resource = $this->getResource($identifier))
+		if (isset($this->resources[$identifier]))
 		{
-			return $resource;
+			return $this->resources[$identifier];
 		}
 
 		foreach ($this->services as $service)
@@ -185,11 +185,11 @@ class Container implements ArrayAccess, ResourceAwareInterface
 				$service->provide();
 				$service->provides = false;
 
-				return $this->getResource($identifier);
+				break;
 			}
 		}
 
-		return null;
+		return $this->getResource($identifier);
 	}
 
 	/**

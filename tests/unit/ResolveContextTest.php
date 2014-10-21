@@ -29,5 +29,7 @@ class ResolveContextTest extends Test
 
 		$this->assertEquals('name', $context->getName());
 		$this->assertTrue($context->isMultiton());
+
+		$this->assertSame($container, $context->getContainer());
 	}
 }

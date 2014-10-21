@@ -62,4 +62,14 @@ class ResolveContext implements ResourceAwareInterface
 	{
 		return $this->multiton;
 	}
+
+	/**
+	 * Returns the Container
+	 *
+	 * @return Container
+	 */
+	public function getContainer()
+	{
+		return $this->container;
+	}
 }

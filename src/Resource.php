@@ -121,6 +121,11 @@ class Resource
 	 */
 	protected function resolveParameter(ResolveContext $context, ReflectionParameter $parameter)
 	{
+		if ($parameter->isDefaultValueAvailable())
+		{
+			return $parameter->getDefaultValue();
+		}
+
 		if ($class = $parameter->getClass())
 		{
 			try
@@ -131,11 +136,6 @@ class Resource
 			{
 				// Let this one pass, fall back to default value
 			}
-		}
-
-		if ($parameter->isDefaultValueAvailable())
-		{
-			return $parameter->getDefaultValue();
 		}
 
 		if (isset($e))

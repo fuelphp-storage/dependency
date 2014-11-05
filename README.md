@@ -1,11 +1,11 @@
-# FuelPHP - Dependency
-
-This is the FuelPHP Dependency package.
+# Fuel Dependency
 
 [![Build Status](https://travis-ci.org/fuelphp/dependency.svg?branch=master)](https://travis-ci.org/fuelphp/dependency)
 [![Code Coverage](https://scrutinizer-ci.com/g/fuelphp/dependency/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/fuelphp/dependency/?branch=master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/fuelphp/dependency/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/fuelphp/dependency/?branch=master)
 [![HHVM Status](http://hhvm.h4cc.de/badge/fuelphp/dependency.svg)](http://hhvm.h4cc.de/package/fuelphp/dependency)
+
+This is the FuelPHP Dependency package.
 
 ## Contents
 
@@ -137,11 +137,9 @@ use Fuel\Dependency\ServiceProvider;
 
 class MyProvider extends ServiceProvider
 {
-	public $namespace = 'my';
-	public $provides = array('some.identifier', 'other.resource');
+	public $provides = ['some.identifier', 'other.resource'];
 
-
-	public function forge($suffix, array $arguments = array())
+	public function forge($suffix, array $arguments = [])
 	{
 		$instance = new Something($suffix);
 		$instance->configure($arguments);

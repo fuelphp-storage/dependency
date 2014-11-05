@@ -16,3 +16,4 @@ nbproject/
 *.sublime-workspace
 index.php
 tests/_output/*
+codeception.yml

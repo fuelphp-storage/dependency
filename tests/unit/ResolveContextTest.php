@@ -15,21 +15,21 @@ use stdClass;
 
 class ResolveContextTest extends Test
 {
-	public function testContext()
-	{
-		// TODO: use mockery
-		$container = new Container;
+	// public function testContext()
+	// {
+	// 	// TODO: use mockery
+	// 	$container = new Container;
 
-		$context = new ResolveContext($container);
+	// 	$context = new ResolveContext($container);
 
-		$this->assertNull($context->getName());
-		$this->assertFalse($context->isMultiton());
+	// 	$this->assertNull($context->getName());
+	// 	$this->assertFalse($context->isMultiton());
 
-		$context = new ResolveContext($container, 'name', true);
+	// 	$context = new ResolveContext($container, 'name', true);
 
-		$this->assertEquals('name', $context->getName());
-		$this->assertTrue($context->isMultiton());
+	// 	$this->assertEquals('name', $context->getName());
+	// 	$this->assertTrue($context->isMultiton());
 
-		$this->assertSame($container, $context->getContainer());
-	}
+	// 	$this->assertSame($container, $context->getContainer());
+	// }
 }

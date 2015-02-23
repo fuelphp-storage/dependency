@@ -24,103 +24,37 @@ class ContainerTest extends Test
 		$this->container = new Container;
 	}
 
-	public function testMultiton()
+	public function testForge()
 	{
 		$this->container->add('m', 'stdClass');
-		$this->assertTrue($this->container->multiton('m', 'name') === $this->container->multiton('m', 'name'));
-		$this->assertTrue($this->container->multiton('m', 'name') !== $this->container->multiton('m', 'other'));
-		$this->assertTrue($this->container->multiton('m', 'name') == $this->container->multiton('m', 'other'));
+
+		$this->assertNotSame($this->container->forge('m'), $this->container->forge('m'));
+	}
+
+	public function testForgeReflect()
+	{
+		$this->assertNotSame($this->container->forge('stdClass'), $this->container->forge('stdClass'));
+	}
+
+	public function testMultiton()
+	{
+		$this->container->add('m', 'stdClass', true);
+		$this->assertSame($this->container->multiton('m', 'name'), $this->container->multiton('m', 'name'));
+		$this->assertNotSame($this->container->multiton('m', 'name'), $this->container->multiton('m', 'other'));
+		$this->assertEquals($this->container->multiton('m', 'name'), $this->container->multiton('m', 'other'));
 		$this->assertTrue($this->container->isInstance('m', 'name'));
 	}
 
-	// public function testExtends()
-	// {
-	// 	$container = new Container;
-	// 	$container->register('id', 'stdClass');
+	public function testIsInstance()
+	{
+		$this->container->add('m', 'stdClass', true);
 
-	// 	$container->extend('id', function($container, $instance) {
-	// 		$instance->name = 'Frank';
-	// 	});
+		$this->assertFalse($this->container->isInstance('m'));
+		$this->container->get('m');
+		$this->assertTrue($this->container->isInstance('m'));
 
-	// 	$container->extend('id', function($container, $instance) {
-	// 		$instance->surname = 'de Jonge';
-
-	// 		return $instance;
-	// 	});
-
-	// 	$instance = $container['id'];
-
-	// 	$this->assertEquals('Frank', $instance->name);
-	// 	$this->assertEquals('de Jonge', $instance->surname);
-	// }
-
-	// public function testExtendsMultiton()
-	// {
-	// 	$container = new Container;
-	// 	$container->register('id', 'stdClass');
-
-	// 	$container->extend('id', function($container, $instance) {
-	// 		$instance->name = 'Frank';
-	// 	});
-
-	// 	$container->extendMultiton('id', 'fullname', function($container, $instance) {
-	// 		$instance->surname = 'de Jonge';
-
-	// 		return $instance;
-	// 	});
-
-	// 	$instance = $container['id'];
-
-	// 	$this->assertEquals('Frank', $instance->name);
-	// 	$this->assertObjectNotHasAttribute('surname', $instance);
-
-	// 	$instance = $container->multiton('id', 'fullname');
-
-	// 	$this->assertEquals('Frank', $instance->name);
-	// 	$this->assertEquals('de Jonge', $instance->surname);
-	// }
-
-	// public function testExtensions()
-	// {
-	// 	$container = new Container;
-	// 	$container->register('id1', 'stdClass');
-	// 	$container->register('id2', 'stdClass');
-
-	// 	$container->extension('addName', function($container, $instance) {
-	// 		$instance->name = 'Frank';
-	// 		$instance->surname = 'de Jonge';
-	// 	});
-
-	// 	$container->extend('id1', 'addName');
-	// 	$container->extend('id2', 'addName');
-
-	// 	$container->extension('addSurname', function($container, $instance) {
-	// 		$instance->surname = 'de Oude';
-
-	// 		return $instance;
-	// 	});
-
-	// 	$container->extend('id1', 'addSurname');
-
-	// 	$instance = $container['id1'];
-	// 	$this->assertEquals('Frank', $instance->name);
-	// 	$this->assertEquals('de Oude', $instance->surname);
-
-	// 	$instance = $container['id2'];
-	// 	$this->assertEquals('Frank', $instance->name);
-	// 	$this->assertEquals('de Jonge', $instance->surname);
-	// }
-
-	/**
-	 * @expectedException \Fuel\Dependency\InvalidExtensionException
-	 */
-	// public function testExtendsFailure()
-	// {
-	// 	$container = new Container;
-	// 	$container->register('id', 'stdClass');
-
-	// 	$container->extend('id', 'this_is_not_a_callable');
-
-	// 	$container['id'];
-	// }
+		$this->assertFalse($this->container->isInstance('m', 'test'));
+		$this->container->multiton('m', 'test');
+		$this->assertTrue($this->container->isInstance('m', 'test'));
+	}
 }

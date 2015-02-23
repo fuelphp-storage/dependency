@@ -12,15 +12,40 @@ namespace Fuel\Dependency;
 
 class Container extends \League\Container\Container
 {
-    /**
-     * Resolves a named instance from the container
-     *
-     * @param string $alias
-     * @param string $instance
-     * @param array  $args
-     *
-     * @return mixed
-     */
+	/**
+	 * Create a new instance of alias regardless of it being singleton or not
+	 *
+	 * @param string $alias
+	 * @param array  $args
+	 *
+	 * @return mixed
+	 */
+	public function forge($alias, array $args = [])
+	{
+		// invoke the correct definition
+		if (array_key_exists($alias, $this->items)) {
+			return $this->resolveDefinition($alias, $args);
+		}
+
+		// if we've got this far, we can assume we need to reflect on a class
+		// and automatically resolve it's dependencies, we also cache the
+		// result if a caching adapter is available
+		$definition = $this->reflect($alias);
+
+		$this->items[$alias]['definition'] = $definition;
+
+		return $definition();
+	}
+
+	/**
+	 * Resolves a named instance from the container
+	 *
+	 * @param string $alias
+	 * @param string $instance
+	 * @param array  $args
+	 *
+	 * @return mixed
+	 */
 	public function multiton($alias, $instance = '__default__', array $args = [])
 	{
 		$name = $alias.'::'.$instance;
@@ -61,6 +86,6 @@ class Container extends \League\Container\Container
 			$alias = $alias.'::'.$instance;
 		}
 
-		return $this->isSingleton($alias);
+		return array_key_exists($alias, $this->singletons);
 	}
 }

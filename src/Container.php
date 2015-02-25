@@ -10,442 +10,86 @@
 
 namespace Fuel\Dependency;
 
-use ArrayAccess;
-use Closure;
-
-class Container implements ArrayAccess, ResourceAwareInterface
+class Container extends \League\Container\Container
 {
 	/**
-	 * @var array $resources
-	 */
-	protected $resources = [];
-
-	/**
-	 * @var array $instances
-	 */
-	protected $instances = [];
-
-	/**
-	 * @var ServiceProvider[] $services
-	 */
-	protected $services = [];
-
-	/**
-	 * Resource specific extensions
+	 * Create a new instance of alias regardless of it being singleton or not
 	 *
-	 * @var array $extends
-	 */
-	protected $extends = [];
-
-	/**
-	 * Resource generic and reusable extensions
-	 *
-	 * @var array $extensions
-	 */
-	protected $extensions = [];
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function register($identifier, $resource)
-	{
-		if ( ! $resource instanceof Resource)
-		{
-			$resource = new Resource($resource);
-		}
-
-		$this->resources[$identifier] = $resource;
-
-		return $this;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function registerSingleton($identifier, $resource)
-	{
-		$this->register($identifier, $resource);
-
-		$this->resources[$identifier]->preferSingleton(true);
-
-		return $this;
-	}
-
-	/**
-	 * Registers a service provider
-	 *
-	 * @param ServiceProvider $service
-	 *
-	 * @return $this
-	 */
-	public function registerService(ServiceProvider $service)
-	{
-		$service->setContainer($this);
-
-		// The provider does not contain a list of resources...
-		if ($service->provides === true)
-		{
-			// ...so we fetch them all here...
-			$service->provide();
-
-			// ...and prevent it from re-fetching in the future
-			$service->provides = false;
-		}
-
-		$this->services[get_class($service)] = $service;
-
-		return $this;
-	}
-
-	/**
-	 * Registers service providers
-	 *
-	 * @param ServiceProvider[] $services
-	 *
-	 * @return $this
-	 */
-	public function registerServices(array $services)
-	{
-		foreach ($services as $service)
-		{
-			$this->registerService($service);
-		}
-
-		return $this;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function inject($identifier, $instance)
-	{
-		$this->instances[$identifier] = $instance;
-
-		return $this;
-	}
-
-	/**
-	 * Removes an instance
-	 *
-	 * @param string $identifier
-	 *
-	 * @return $this
-	 */
-	public function remove($identifier)
-	{
-		if (isset($this->instances[$identifier]))
-		{
-			unset($this->instances[$identifier]);
-		}
-
-		return $this;
-	}
-
-	/**
-	 * Tries to get the resource from the currently loaded resources
-	 *
-	 * @param string $identifier
-	 *
-	 * @return Resource|null The found resource, or null if not found
-	 */
-	protected function getResource($identifier)
-	{
-		if (isset($this->resources[$identifier]))
-		{
-			return $this->resources[$identifier];
-		}
-
-		if (class_exists($identifier, true))
-		{
-			return $this->resources[$identifier] = new Resource($identifier);
-		}
-
-		return null;
-	}
-
-	/**
-	 * Finds a resource identified by the identifier passed
-	 *
-	 * @param string $identifier
-	 *
-	 * @return Resource|null The found resource, or null if not found
-	 */
-	protected function findResource($identifier)
-	{
-		if (isset($this->resources[$identifier]))
-		{
-			return $this->resources[$identifier];
-		}
-
-		foreach ($this->services as $service)
-		{
-			/** @type ServiceProvider $service */
-			if ($service->provides and in_array($identifier, $service->provides))
-			{
-				$service->provide();
-				$service->provides = false;
-
-				break;
-			}
-		}
-
-		return $this->getResource($identifier);
-	}
-
-	/**
-	 * Finds and returns a new instance of a resource
-	 *
-	 * @param string $identifier
-	 *
-	 * @return Resource The found resource
-	 *
-	 * @throws ResolveException If the resource cannot be found
-	 */
-	public function find($identifier)
-	{
-		if ( ! $resource = $this->findResource($identifier))
-		{
-			throw new ResolveException('Could not find resource: '.$identifier);
-		}
-
-		return $resource;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function resolve($identifier, array $arguments = [])
-	{
-		// If we find a previously resolved instance
-		if ($instance = $this->getInstance($identifier))
-		{
-			// Return it
-			return $instance;
-		}
-
-		// Find the resource
-		$resource = $this->find($identifier);
-
-		// Get the context
-		$context = $this->getContext();
-
-		// Resolve an instance
-		$instance = $resource->resolve($context, $arguments);
-
-		// Apply any supplied extensions
-		$instance = $this->applyExtensions($identifier, $instance);
-
-		// When the resource prefers to be Singleton
-		if ($resource->preferSingleton)
-		{
-			// Store the instance
-			$this->instances[$identifier] = $instance;
-		}
-
-		return $instance;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function forge($identifier, array $arguments = [])
-	{
-		// Find the resource
-		$resource = $this->find($identifier);
-
-		// Get the context
-		$context = $this->getContext();
-
-		// Resolve an instance
-		$instance = $resource->resolve($context, $arguments);
-
-		// Apply any supplied extensions
-		$instance = $this->applyExtensions($identifier, $instance);
-
-		return $instance;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function multiton($identifier, $name = '__default__', array $arguments = [])
-	{
-		$instanceName = $identifier.'::'.$name;
-
-		// If we find a previously resolved instance
-		if ($instance = $this->getInstance($instanceName))
-		{
-			// Return it
-			return $instance;
-		}
-
-		// Find the resource
-		$resource = $this->find($identifier);
-
-		// Get the context
-		$context = $this->getContext($name, true);
-
-		// Resolve an instance
-		$instance = $resource->resolve($context, $arguments);
-
-		// Apply any supplied extensions
-		$instance = $this->applyExtensions($identifier, $instance);
-
-		// Apply any supplied extensions for multiton
-		$instance = $this->applyExtensions($instanceName, $instance);
-
-		return $this->instances[$instanceName] = $instance;
-	}
-
-	/**
-	 * Creates a new context
-	 *
-	 * @param string  $name
-	 * @param boolean $multiton
-	 *
-	 * @return ResolveContext
-	 */
-	public function getContext($name = null, $multiton = false)
-	{
-		return new ResolveContext($this, $name, $multiton);
-	}
-
-	/**
-	 * Attaches extensions to an identifier
-	 *
-	 * @param string          $identifier
-	 * @param string|callable $extension  the generic extension, or a callable implementing the extension
-	 *
-	 * @return $this
-	 */
-	public function extend($identifier, $extension)
-	{
-		$this->extends[$identifier][] = $extension;
-
-		return $this;
-	}
-
-	/**
-	 * Attaches extensions to a multiton identifier
-	 *
-	 * @param string          $identifier
-	 * @param string          $name
-	 * @param string|callable $extension  the generic extension, or a callable implementing the extension
-	 *
-	 * @return $this
-	 */
-	public function extendMultiton($identifier, $name, $extension)
-	{
-		$identifier = $identifier.'::'.$name;
-
-		return $this->extend($identifier, $extension);
-	}
-
-	/**
-	 * Defines a generic resource extension
-	 *
-	 * @param string  $identifier
-	 * @param Closure $extension
-	 *
-	 * @return $this
-	 */
-	public function extension($identifier, Closure $extension)
-	{
-		$this->extensions[$identifier] = $extension;
-
-		return $this;
-	}
-
-	/**
-	 * Applies all defined extensions to the instance
-	 *
-	 * @param string $identifier
-	 * @param mixed  $instance
+	 * @param string $alias
+	 * @param array  $args
 	 *
 	 * @return mixed
 	 */
-	public function applyExtensions($identifier, $instance)
+	public function forge($alias, array $args = [])
 	{
-		if ( ! isset($this->extends[$identifier]))
+		// invoke the correct definition
+		if (array_key_exists($alias, $this->items))
 		{
-			return $instance;
+			return $this->resolveDefinition($alias, $args);
 		}
 
-		foreach ($this->extends[$identifier] as $extension)
-		{
-			if (is_string($extension) and isset($this->extensions[$extension]))
-			{
-				$extension = $this->extensions[$extension];
-			}
+		// if we've got this far, we can assume we need to reflect on a class
+		// and automatically resolve it's dependencies, we also cache the
+		// result if a caching adapter is available
+		$definition = $this->reflect($alias);
 
-			if ( ! is_callable($extension))
-			{
-				throw new InvalidExtensionException('Extension for resource '.$identifier.' cannot be applied: not callable.');
-			}
+		$this->items[$alias]['definition'] = $definition;
 
-			if ($result = call_user_func($extension, $this, $instance))
-			{
-				$instance = $result;
-			}
-		}
-
-		return $instance;
+		return $definition();
 	}
 
 	/**
-	 * Retrieves a resolved instance
+	 * Resolves a named instance from the container
 	 *
-	 * @param string $identifier
+	 * @param string $alias
+	 * @param string $instance
+	 * @param array  $args
 	 *
-	 * @return mixed|null
+	 * @return mixed
 	 */
-	protected function getInstance($identifier)
+	public function multiton($alias, $instance = '__default__', array $args = [])
 	{
-		if (isset($this->instances[$identifier]))
+		$name = $alias.'::'.$instance;
+
+		// It is a singleton with a special name
+		if ($this->isSingleton($name))
 		{
-			return $this->instances[$identifier];
+			return $this->singletons[$name];
 		}
+
+		// Disable singleton so the resolved concrete does not gets stored
+		if ($this->isRegistered($alias) and isset($this->items[$alias]['singleton']))
+		{
+			$previousSingletonSetting = $this->items[$alias]['singleton'];
+			$this->items[$alias]['singleton'] = false;
+		}
+
+		$concrete = $this->singletons[$name] = $this->get($alias, $args);
+
+		// Reset to the previous value
+		if (isset($previousSingletonSetting))
+		{
+			$this->items[$alias]['singleton'] = $previousSingletonSetting;
+		}
+
+		return $concrete;
 	}
 
 	/**
-	 * Check if a resolved instance exists
+	 * Checks if a resolved instance exists
 	 *
-	 * @param string $identifier
+	 * @param string $alias
+	 * @param string $instance
 	 *
 	 * @return boolean
 	 */
-	public function isInstance($identifier, $name = null)
+	public function isInstance($alias, $instance = null)
 	{
-		if ($name !== null)
+		if (isset($instance))
 		{
-			$identifier = $identifier.'::'.$name;
+			$alias = $alias.'::'.$instance;
 		}
 
-		return isset($this->instances[$identifier]);
-	}
-
-	public function offsetExists($offset)
-	{
-		if ($this->getInstance($offset) or $this->findResource($offset))
-		{
-			return true;
-		}
-
-		return false;
-	}
-
-	public function offsetGet($offset)
-	{
-		return $this->resolve($offset);
-	}
-
-	public function offsetSet($offset, $resource)
-	{
-		$this->register($offset, $resource);
-	}
-
-	public function offsetUnset($offset)
-	{
-		$this->remove($offset);
+		return array_key_exists($alias, $this->singletons);
 	}
 }

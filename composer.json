@@ -1,6 +1,6 @@
 {
 	"name": "fuelphp/dependency",
-	"description": "Fuel Dependency handling",
+	"description": "Fuel Dependency package based on League\\Container",
 	"keywords": ["dependency", "injection", "dependencies"],
 	"homepage": "https://github.com/fuelphp/dependency",
 	"license": "MIT",

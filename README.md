@@ -107,3 +107,13 @@ $container->singleton('closure.object', function() {
 // Always returns a newly resolved definition
 $instance = $container->forge('closure.object');
 ```
+
+
+## Contributing
+
+Thank you for considering contribution to FuelPHP framework. Please see [CONTRIBUTING](https://github.com/fuelphp/fuelphp/blob/master/CONTRIBUTING.md) for details.
+
+
+## License
+
+The MIT License (MIT). Please see [License File](LICENSE) for more information.

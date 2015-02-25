@@ -1,6 +1,6 @@
 {
 	"name": "fuelphp/dependency",
-	"description": "FuelPHP Dependency handling",
+	"description": "Fuel Dependency handling",
 	"keywords": ["dependency", "injection", "dependencies"],
 	"homepage": "https://github.com/fuelphp/dependency",
 	"license": "MIT",
@@ -11,15 +11,20 @@
 		}
 	],
 	"require": {
-		"php": ">=5.4"
+		"php": ">=5.4",
+		"league/container": "~1.2"
 	},
 	"require-dev": {
-		"codeception/codeception": "~2.0.0",
-		"league/container": "~1.2"
+		"codeception/codeception": "~2.0"
 	},
 	"autoload": {
 		"psr-4": {
 			"Fuel\\Dependency\\": "src/"
+		}
+	},
+	"extra": {
+		"branch-alias": {
+			"dev-master": "2.0-dev"
 		}
 	}
 }

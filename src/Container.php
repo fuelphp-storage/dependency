@@ -23,7 +23,8 @@ class Container extends \League\Container\Container
 	public function forge($alias, array $args = [])
 	{
 		// invoke the correct definition
-		if (array_key_exists($alias, $this->items)) {
+		if (array_key_exists($alias, $this->items))
+		{
 			return $this->resolveDefinition($alias, $args);
 		}
 
@@ -51,12 +52,14 @@ class Container extends \League\Container\Container
 		$name = $alias.'::'.$instance;
 
 		// It is a singleton with a special name
-		if ($this->isSingleton($name)) {
+		if ($this->isSingleton($name))
+		{
 			return $this->singletons[$name];
 		}
 
 		// Disable singleton so the resolved concrete does not gets stored
-		if ($this->isRegistered($alias) and isset($this->items[$alias]['singleton'])) {
+		if ($this->isRegistered($alias) and isset($this->items[$alias]['singleton']))
+		{
 			$previousSingletonSetting = $this->items[$alias]['singleton'];
 			$this->items[$alias]['singleton'] = false;
 		}
@@ -64,7 +67,8 @@ class Container extends \League\Container\Container
 		$concrete = $this->singletons[$name] = $this->get($alias, $args);
 
 		// Reset to the previous value
-		if (isset($previousSingletonSetting)) {
+		if (isset($previousSingletonSetting))
+		{
 			$this->items[$alias]['singleton'] = $previousSingletonSetting;
 		}
 

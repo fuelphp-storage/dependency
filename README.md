@@ -87,12 +87,16 @@ Fuel adds two main functionalities to the Container:
 
 ``` php
 // Register
-$container->add('closure.object', function() {
+$container->add('closure::object1', function() {
+	return new stdClass;
+});
+$container->add('closure::object2', function() {
 	return new stdClass;
 });
 
 // Resolve
-$instance = $container->multiton('closure.object', 'named_instance');
+object1 = $container->multiton('closure', 'object1');
+objects = $container->multiton('closure');
 ```
 
 #### Forge

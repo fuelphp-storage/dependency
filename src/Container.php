@@ -56,6 +56,19 @@ class Container extends \League\Container\Container
 	 */
 	public function multiton($alias, $instance = '__default__', array $args = [])
 	{
+		if (1 === func_num_args())
+		{
+			$multitons = [];
+			foreach ($this->singletons as $name => $value)
+			{
+				if (0 === strpos($name, $alias.'::'))
+				{
+					$multitons[substr($name, strlen($alias)+2)] = $value;
+				}
+			}
+			return $multitons;
+		}
+
 		$name = $alias.'::'.$instance;
 
 		// It is a singleton with a special name

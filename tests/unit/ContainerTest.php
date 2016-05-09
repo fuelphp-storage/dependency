@@ -23,30 +23,19 @@ class ContainerTest extends Test
 		$this->assertNotSame($this->container->forge('m'), $this->container->forge('m'));
 	}
 
-	public function testForgeReflect()
-	{
-		$this->assertNotSame($this->container->forge('stdClass'), $this->container->forge('stdClass'));
-	}
-
 	public function testMultiton()
 	{
 		$this->container->add('m', 'stdClass', true);
 		$this->assertSame($this->container->multiton('m', 'name'), $this->container->multiton('m', 'name'));
 		$this->assertNotSame($this->container->multiton('m', 'name'), $this->container->multiton('m', 'other'));
 		$this->assertEquals($this->container->multiton('m', 'name'), $this->container->multiton('m', 'other'));
-		$this->assertTrue($this->container->isInstance('m', 'name'));
-	}
 
-	public function testIsInstance()
-	{
-		$this->container->add('m', 'stdClass', true);
-
-		$this->assertFalse($this->container->isInstance('m'));
-		$this->container->get('m');
-		$this->assertTrue($this->container->isInstance('m'));
-
-		$this->assertFalse($this->container->isInstance('m', 'test'));
-		$this->container->multiton('m', 'test');
-		$this->assertTrue($this->container->isInstance('m', 'test'));
+		$this->assertEquals(
+			[
+				'name' => new \stdClass(),
+				'other' => new \stdClass(),
+			],
+			$this->container->multiton('m')
+		);
 	}
 }

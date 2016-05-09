@@ -29,20 +29,7 @@ class Container extends \League\Container\Container
 	 */
 	public function forge($alias, array $args = [])
 	{
-		// invoke the correct definition
-		if (array_key_exists($alias, $this->items))
-		{
-			return $this->resolveDefinition($alias, $args);
-		}
-
-		// if we've got this far, we can assume we need to reflect on a class
-		// and automatically resolve it's dependencies, we also cache the
-		// result if a caching adapter is available
-		$definition = $this->reflect($alias);
-
-		$this->items[$alias]['definition'] = $definition;
-
-		return $definition();
+		return $this->get($alias, $args);
 	}
 
 	/**
@@ -59,7 +46,7 @@ class Container extends \League\Container\Container
 		if (1 === func_num_args())
 		{
 			$multitons = [];
-			foreach ($this->singletons as $name => $value)
+			foreach ($this->sharedDefinitions as $name => $value)
 			{
 				if (0 === strpos($name, $alias.'::'))
 				{
@@ -72,44 +59,28 @@ class Container extends \League\Container\Container
 		$name = $alias.'::'.$instance;
 
 		// It is a singleton with a special name
-		if ($this->isSingleton($name))
+		if ($this->hasShared($name))
 		{
-			return $this->singletons[$name];
+			return $this->sharedDefinitions[$name];
 		}
 
 		// Disable singleton so the resolved concrete does not gets stored
-		if ($this->isRegistered($alias) and isset($this->items[$alias]['singleton']))
+		if ($this->has($alias) and isset($this->sharedDefinitions[$alias]))
 		{
-			$previousSingletonSetting = $this->items[$alias]['singleton'];
-			$this->items[$alias]['singleton'] = false;
+			$previousSingletonSetting = $this->sharedDefinitions[$alias];
+			unset($this->sharedDefinitions[$alias]);
+			$this->definitions[$alias] = $previousSingletonSetting;
 		}
 
-		$concrete = $this->singletons[$name] = $this->get($alias, $args);
+		$concrete = $this->sharedDefinitions[$name] = $this->get($alias, $args);
 
 		// Reset to the previous value
 		if (isset($previousSingletonSetting))
 		{
-			$this->items[$alias]['singleton'] = $previousSingletonSetting;
+			unset($this->definitions[$alias]);
+			$this->sharedDefinitions[$alias] = $previousSingletonSetting;
 		}
 
 		return $concrete;
-	}
-
-	/**
-	 * Checks if a resolved instance exists
-	 *
-	 * @param string $alias
-	 * @param string $instance
-	 *
-	 * @return boolean
-	 */
-	public function isInstance($alias, $instance = null)
-	{
-		if (isset($instance))
-		{
-			$alias = $alias.'::'.$instance;
-		}
-
-		return array_key_exists($alias, $this->singletons);
 	}
 }

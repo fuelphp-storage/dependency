@@ -3,7 +3,6 @@
 [![Build Status](https://img.shields.io/travis/fuelphp/dependency.svg?style=flat-square)](https://travis-ci.org/fuelphp/dependency)
 [![Code Coverage](https://img.shields.io/scrutinizer/coverage/g/fuelphp/dependency.svg?style=flat-square)](https://scrutinizer-ci.com/g/fuelphp/dependency)
 [![Quality Score](https://img.shields.io/scrutinizer/g/fuelphp/dependency.svg?style=flat-square)](https://scrutinizer-ci.com/g/fuelphp/dependency)
-[![HHVM Status](https://img.shields.io/hhvm/fuelphp/dependency.svg?style=flat-square)](http://hhvm.h4cc.de/package/fuelphp/dependency)
 
 **Fuel Dependency package based on [League\Container](http://container.thephpleague.com).**
 
